@@ -17,21 +17,33 @@ export default {
     }
   },
   mounted() {
-    this.loginWithGoogle()
+    // Ensure the Google API is ready before initializing login
+    if (window.google && window.google.accounts) {
+      this.loginWithGoogle()
+    } else {
+      // Listen for the script's load event to initialize login
+      window.addEventListener('load', this.onGoogleScriptLoad)
+    }
+  },
+  beforeUnmount() {
+    // Clean up the event listener to avoid memory leaks
+    window.removeEventListener('load', this.onGoogleScriptLoad)
   },
   methods: {
-    async loginWithGoogle() {
-      if (!window.google) {
-        console.error('Google API is not loaded yet.')
-        return
+    onGoogleScriptLoad() {
+      if (window.google && window.google.accounts) {
+        this.loginWithGoogle()
+      } else {
+        console.error('Google API failed to load.')
       }
+    },
+    async loginWithGoogle() {
+      console.log('Google API loaded successfully!')
 
       // Assign the handleCredentialResponse function to the window scope
       window.handleCredentialResponse = this.handleCredentialResponse
 
-      // Get the client ID from the environment variable
-      const client = import.meta.env.VUE_APP_CLIENT_ID
-      console.log('Client ID:', client) // Check if Client ID is loaded
+      const client = import.meta.env.VITE_CLIENT_ID
 
       // Initialize Google accounts
       window.google.accounts.id.initialize({
@@ -55,8 +67,6 @@ export default {
     },
     handleCredentialResponse(response) {
       const token = response.credential
-
-      // Here you can decode the token to extract user information
       this.decodeToken(token)
     },
     decodeToken(token) {
@@ -70,8 +80,8 @@ export default {
         picture: jsonPayload.picture,
       }
 
-      // Navigate to a different route or perform any actions
-      this.$router.push({ name: 'home' }) // Change to your home route name
+      // Redirect to home page or perform further actions
+      this.$router.push({ name: 'home' }) // Adjust route as needed
     },
   },
 }

@@ -2,11 +2,11 @@ Project Setup
 
 Clone the project into your XAMPP/xamppfiles/htdocs directory.
 
-    `git clone https://github.com/IReveles/PROJECT3-SE4-frontend.git`
+    git clone https://github.com/IReveles/PROJECT3-SE4-frontend.git
 
 Install the project.
    
-    `npm install`
+    npm install
 
  Make sure Apache is running.
     We recommend using XAMPP to serve this project.

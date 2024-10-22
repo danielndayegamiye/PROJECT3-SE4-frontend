@@ -21,12 +21,10 @@ export default {
     if (window.google && window.google.accounts) {
       this.loginWithGoogle()
     } else {
-      // Listen for the script's load event to initialize login
       window.addEventListener('load', this.onGoogleScriptLoad)
     }
   },
   beforeUnmount() {
-    // Clean up the event listener to avoid memory leaks
     window.removeEventListener('load', this.onGoogleScriptLoad)
   },
   methods: {
@@ -40,7 +38,6 @@ export default {
     async loginWithGoogle() {
       console.log('Google API loaded successfully!')
 
-      // Assign the handleCredentialResponse function to the window scope
       window.handleCredentialResponse = this.handleCredentialResponse
 
       const client = import.meta.env.VITE_CLIENT_ID
@@ -53,7 +50,7 @@ export default {
         callback: window.handleCredentialResponse,
       })
 
-      // Render the Google login button
+      // Render the Google login button with a smaller width
       window.google.accounts.id.renderButton(
         document.getElementById('parent_id'),
         {
@@ -61,7 +58,7 @@ export default {
           theme: 'outline',
           size: 'large',
           text: 'signup_with',
-          width: 400,
+          width: 250, // Adjust the width to make it smaller
         },
       )
     },
@@ -81,7 +78,7 @@ export default {
       }
 
       // Redirect to home page or perform further actions
-      this.$router.push({ name: 'home' }) // Adjust route as needed
+      this.$router.push({ name: 'home' })
     },
   },
 }

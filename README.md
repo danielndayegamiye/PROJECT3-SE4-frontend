@@ -20,4 +20,4 @@ Install the project.
 
 Compile and run the project locally.
 
-    npm run build
+    npm run dev

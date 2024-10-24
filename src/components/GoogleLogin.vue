@@ -1,85 +1,88 @@
 <template>
   <div class="signup-buttons">
     <v-row justify="center">
-      <div id="parent_id"></div>
+      <div display="flex" id="parent_id"></div>
     </v-row>
     <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'GoogleLogin',
-  data() {
-    return {
-      user: {},
-      errorMessage: '',
-    }
-  },
-  mounted() {
-    // Ensure the Google API is ready before initializing login
-    if (window.google && window.google.accounts) {
-      this.loginWithGoogle()
-    } else {
-      window.addEventListener('load', this.onGoogleScriptLoad)
-    }
-  },
-  beforeUnmount() {
-    window.removeEventListener('load', this.onGoogleScriptLoad)
-  },
-  methods: {
-    onGoogleScriptLoad() {
-      if (window.google && window.google.accounts) {
-        this.loginWithGoogle()
-      } else {
-        console.error('Google API failed to load.')
-      }
-    },
-    async loginWithGoogle() {
-      console.log('Google API loaded successfully!')
+<script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import AuthServices from '../services/authServices'
+import Utils from '../config/utils.js'
+import { useRouter } from 'vue-router'
 
-      window.handleCredentialResponse = this.handleCredentialResponse
+// Router for navigation
+const router = useRouter()
 
-      const client = import.meta.env.VITE_CLIENT_ID
+// State variables
+const user = ref({})
+const fName = ref('')
+const lName = ref('')
+const errorMessage = ref('')
 
-      // Initialize Google accounts
-      window.google.accounts.id.initialize({
-        client_id: client,
-        cancel_on_tap_outside: false,
-        auto_select: true,
-        callback: window.handleCredentialResponse,
-      })
+// Initialize Google Login
+const loginWithGoogle = () => {
+  console.log('Initializing Google Login')
 
-      // Render the Google login button with a smaller width
-      window.google.accounts.id.renderButton(
-        document.getElementById('parent_id'),
-        {
-          type: 'standard',
-          theme: 'outline',
-          size: 'large',
-          text: 'signup_with',
-          width: 250, // Adjust the width to make it smaller
-        },
-      )
-    },
-    handleCredentialResponse(response) {
-      const token = response.credential
-      this.decodeToken(token)
-    },
-    decodeToken(token) {
-      const base64Url = token.split('.')[1]
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
-      const jsonPayload = JSON.parse(window.atob(base64))
+  const client = import.meta.env._CLIENT_ID // Use the environment variable
+  console.log(client)
 
-      this.user = {
-        name: jsonPayload.name,
-        email: jsonPayload.email,
-        picture: jsonPayload.picture,
-      }
+  window.handleCredentialResponse = handleCredentialResponse
 
-      // Redirect to home page or perform further actions
-      this.$router.push({ name: 'home' })
-    },
-  },
+  // Initialize Google accounts
+  window.google.accounts.id.initialize({
+    client_id: client,
+    cancel_on_tap_outside: false,
+    auto_select: true,
+    callback: window.handleCredentialResponse,
+  })
+
+  // Render the Google login button
+  window.google.accounts.id.renderButton(document.getElementById('parent_id'), {
+    type: 'standard',
+    theme: 'outline',
+    size: 'large',
+    text: 'signup_with',
+    width: 400, // Adjusted width
+  })
 }
+
+// Handle Google credential response
+const handleCredentialResponse = async response => {
+  try {
+    const token = { credential: response.credential }
+
+    // Send token to the backend via AuthServices
+    const res = await AuthServices.loginUser(token)
+    user.value = res.data
+
+    // Store user data locally
+    Utils.setStore('user', user.value)
+
+    fName.value = user.value.fName
+    lName.value = user.value.lName
+
+    // Navigate to home page on successful login
+    router.push({ name: 'home' })
+  } catch (error) {
+    console.error('Login failed', error)
+    errorMessage.value = 'Login failed. Please try again.'
+  }
+}
+
+// Mount the login function on component mount
+onMounted(() => {
+  if (window.google && window.google.accounts) {
+    loginWithGoogle()
+  } else {
+    window.addEventListener('load', loginWithGoogle)
+  }
+})
+
+// Cleanup event listeners before unmounting
+onBeforeUnmount(() => {
+  window.removeEventListener('load', loginWithGoogle)
+})
 </script>

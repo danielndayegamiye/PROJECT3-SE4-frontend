@@ -50,8 +50,7 @@ export default {
         callback: window.handleCredentialResponse,
       })
 
-  const client = import.meta.env.VITE_CLIENT_ID // Use the environment variable
-  console.log(client)
+      console.log(client)
       // Render the Google login button with a smaller width
       window.google.accounts.id.renderButton(
         document.getElementById('parent_id'),
@@ -73,29 +72,23 @@ export default {
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
       const jsonPayload = JSON.parse(window.atob(base64))
 
-
       this.user = {
         name: jsonPayload.name,
         email: jsonPayload.email,
         picture: jsonPayload.picture,
       }
 
-  // Initialize Google accounts
-  window.google.accounts.id.initialize({
-    client_id: client,
-    cancel_on_tap_outside: false,
-    auto_select: true,
-    callback: window.handleCredentialResponse,
-  })
-
-  // Render the Google login button
-  window.google.accounts.id.renderButton(document.getElementById('parent_id'), {
-    type: 'standard',
-    theme: 'outline',
-    size: 'large',
-    text: 'signup_with',
-    width: 250, // Adjusted width
-  })
+      // Render the Google login button
+      window.google.accounts.id.renderButton(
+        document.getElementById('parent_id'),
+        {
+          type: 'standard',
+          theme: 'outline',
+          size: 'large',
+          text: 'signup_with',
+          width: 250, // Adjusted width
+        },
+      )
       // Redirect to home page or perform further actions
       this.$router.push({ name: 'home' })
     },

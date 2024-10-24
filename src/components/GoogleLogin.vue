@@ -26,7 +26,7 @@ const errorMessage = ref('')
 const loginWithGoogle = () => {
   console.log('Initializing Google Login')
 
-  const client = import.meta.env._CLIENT_ID // Use the environment variable
+  const client = import.meta.env.VITE_CLIENT_ID // Use the environment variable
   console.log(client)
 
   window.handleCredentialResponse = handleCredentialResponse

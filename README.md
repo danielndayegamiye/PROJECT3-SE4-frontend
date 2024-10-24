@@ -1,35 +1,23 @@
-# PROJECT3-SE4-frontend
+Project Setup
 
-This template should help get you started developing with Vue 3 in Vite.
+Clone the project into your XAMPP/xamppfiles/htdocs directory.
 
-## Recommended IDE Setup
+    git clone https://github.com/IReveles/PROJECT3-SE4-frontend.git
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Install the project.
+   
+    npm install
 
-## Customize configuration
+ Make sure Apache is running.
+    We recommend using XAMPP to serve this project.
+    In XAMPP, make sure that Apache is running.
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+  Add a local .env file and make sure the client ID and client secret are the values you have registered with Google.
 
-## Project Setup
+        VITE_CLIENT_ID = 'your-google-client-id'
+        VITE_CLIENT_URL = 'http://localhost:8081'
+        VITE_API_URL = 'https://accounts.google.com/gsi/client'
 
-```sh
-npm install
-```
+Compile and run the project locally.
 
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+    npm run dev

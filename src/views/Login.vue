@@ -1,14 +1,19 @@
 <template>
+  <title>Login</title>
   <v-container
     class="d-flex flex-column align-center"
-    style="padding-top: 20px"
+    style="padding-top: 60px"
   >
-    <v-row justify="center" class="mb-1">
+    <v-row justify="center" class="mb-0" style="margin-left: -15px">
       <img src="@/assets/logo.png" width="400" height="250" />
     </v-row>
-    <v-row justify="center">
-      <GoogleLogin />
-    </v-row>
+    <div class="login-card">
+      <h3>Login</h3>
+      <br /><br />
+      <v-row class="d-flex justify-center align-center">
+        <GoogleLogin />
+      </v-row>
+    </div>
   </v-container>
 </template>
 
@@ -23,12 +28,21 @@ export default {
 </script>
 
 <style scoped>
-/* Optional: Adjust styles as needed */
 .v-container {
-  height: auto; /* Ensure it collapses to content height */
+  height: auto;
 }
 
 .v-row {
-  margin-top: 0; /* Remove margin on top */
+  margin-top: 0;
+}
+
+.login-card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 2rem;
+  width: 400px;
+  height: 250px;
+  box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.2);
+  border: 1px rgb(19, 17, 17);
 }
 </style>

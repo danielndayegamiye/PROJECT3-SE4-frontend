@@ -1,7 +1,7 @@
 <template>
   <div class="signup-buttons">
     <v-row justify="center">
-      <div display="flex" id="parent_id"></div>
+      <div id="parent_id"></div>
     </v-row>
     <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
   </div>
@@ -45,7 +45,7 @@ const loginWithGoogle = () => {
     theme: 'outline',
     size: 'large',
     text: 'signup_with',
-    width: 400, // Adjusted width
+    width: 250, // Adjusted width
   })
 }
 

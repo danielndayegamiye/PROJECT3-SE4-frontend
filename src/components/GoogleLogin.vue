@@ -50,6 +50,7 @@ export default {
         callback: window.handleCredentialResponse,
       })
 
+      console.log(client)
       // Render the Google login button with a smaller width
       window.google.accounts.id.renderButton(
         document.getElementById('parent_id'),
@@ -77,6 +78,17 @@ export default {
         picture: jsonPayload.picture,
       }
 
+      // Render the Google login button
+      window.google.accounts.id.renderButton(
+        document.getElementById('parent_id'),
+        {
+          type: 'standard',
+          theme: 'outline',
+          size: 'large',
+          text: 'signup_with',
+          width: 250, // Adjusted width
+        },
+      )
       // Redirect to home page or perform further actions
       this.$router.push({ name: 'home' })
     },

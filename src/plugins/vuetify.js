@@ -1,9 +1,13 @@
 // src/plugins/vuetify.js
 import 'vuetify/styles' // Import Vuetify CSS styles
 import { createVuetify } from 'vuetify' // Import Vuetify functionality
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 
 const vuetify = createVuetify({
+  components,
+  directives,
   theme: {
     defaultTheme: 'light',
     themes: {

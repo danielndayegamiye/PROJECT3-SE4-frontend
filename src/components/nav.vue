@@ -2,7 +2,7 @@
   <nav class="navbar">
     <!-- Logo Placeholder -->
     <div class="navbar-logo">
-      <router-link to="/">
+      <router-link to="/home">
         <img src="../../resume.png" alt="Logo" class="logo" />
       </router-link>
     </div>
@@ -38,7 +38,7 @@ export default {
       // Clear tokens in localStorage
       localStorage.removeItem('authToken')
       // Redirect to login page after logout
-      this.$router.push('/login')
+      this.$router.push('/')
     },
   },
 }

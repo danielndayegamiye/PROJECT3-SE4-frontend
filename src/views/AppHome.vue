@@ -6,93 +6,132 @@
 
   <v-container class="app-home" fluid>
     <main class="content">
-      <!-- Main Title -->
-      <div class="title-container">
-        <h1 class="title">How will you make your resume?</h1>
-      </div>
-
-      <!-- Options for Creating or Viewing Resumes -->
-      <div class="options">
-        <div class="option-card" @click="startFromScratch">
-          <span class="icon">✨</span>
-          <div class="text-content">
-            <h3>Start from scratch</h3>
-            <p>Build a new Resume</p>
-          </div>
-          <span class="arrow">→</span>
+      <div v-if="!showResumeList">
+        <!-- Main Title -->
+        <div class="title-container">
+          <h1 class="title">How will you make your resume?</h1>
         </div>
 
-        <div class="option-card" @click="viewExistingResumes">
-          <span class="icon">📄</span>
-          <div class="text-content">
-            <h3>View Existing Resumes</h3>
-            <p>Access your saved resumes</p>
+        <!-- Options for Creating or Viewing Resumes -->
+        <div class="options">
+          <div class="option-card" @click="startFromScratch">
+            <span class="icon">✨</span>
+            <div class="text-content">
+              <h3>Start from scratch</h3>
+              <p>Build a new Resume</p>
+            </div>
+            <span class="arrow">→</span>
           </div>
-          <span class="arrow">→</span>
-        </div>
-      </div>
 
-      <!-- Recent Resumes Section -->
-      <section class="recent-resumes">
-        <h2 class="recent-title">Recent Resumes</h2>
-        <div class="resume-list">
-          <div
-            v-for="resume in recentResumes"
-            :key="resume.id"
-            class="resume-card"
-            @click="openResume(resume.id)"
-          >
-            <span class="resume-icon">📑</span>
-            <div class="resume-details">
-              <h4 class="resume-title">{{ resume.title }}</h4>
-              <p class="resume-date">
-                Last accessed: {{ resume.lastAccessed }}
-              </p>
+          <div class="option-card" @click="viewExistingResumes">
+            <span class="icon">📄</span>
+            <div class="text-content">
+              <h3>View Existing Resumes</h3>
+              <p>Access your saved resumes</p>
+            </div>
+            <span class="arrow">→</span>
+          </div>
+        </div>
+
+        <!-- Recent Resumes Section -->
+        <section class="recent-resumes">
+          <h2 class="recent-title">Recent Resumes</h2>
+          <div class="resume-list">
+            <div
+              v-for="resume in recentResumes"
+              :key="resume.id"
+              class="resume-card"
+              @click="openResume(resume.id)"
+            >
+              <span class="resume-icon">📑</span>
+              <div class="resume-details">
+                <h4 class="resume-title">{{ resume.title }}</h4>
+                <p class="resume-date">
+                  Created at: {{ formatDate(resume.createdAt) }}
+                </p>
+              </div>
             </div>
           </div>
+        </section>
+      </div>
+
+      <!-- ResumeList Modal -->
+      <div
+        v-if="showResumeList"
+        class="modal-backdrop"
+        @click.self="closeModal"
+      >
+        <div class="modal-content">
+          <button class="close-button" @click="closeModal">×</button>
+          <ResumeList />
         </div>
-      </section>
+      </div>
     </main>
   </v-container>
 </template>
 
 <script>
 import Nav from '../components/Nav.vue'
+import ResumeList from '../components/ResumeList.vue'
+import apiClient from '../services/services.js'
 
 export default {
   name: 'AppHome',
   components: {
     Nav,
+    ResumeList,
   },
   data() {
     return {
-      recentResumes: [
-        {
-          id: 1,
-          title: 'Software Engineer Resume',
-          lastAccessed: 'Oct 28, 2024',
-        },
-        { id: 2, title: 'Data Analyst Resume', lastAccessed: 'Oct 26, 2024' },
-        {
-          id: 3,
-          title: 'Product Manager Resume',
-          lastAccessed: 'Oct 25, 2024',
-        },
-      ],
+      resumes: [],
+      showResumeList: false, // Controls display of ResumeList modal
     }
   },
+  computed: {
+    recentResumes() {
+      // Sort resumes by createdAt date in descending order and take the top 3
+      return [...this.resumes]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 3)
+    },
+  },
+  created() {
+    this.fetchResumes()
+  },
   methods: {
+    fetchResumes() {
+      apiClient
+        .get('/resumes')
+        .then(response => {
+          this.resumes = response.data
+        })
+        .catch(error => {
+          console.error('Error fetching resumes:', error)
+        })
+    },
     startFromScratch() {
       this.$router.push('/builder')
     },
     viewExistingResumes() {
-      this.$router.push('/existing-resumes')
+      this.showResumeList = true // Show the ResumeList modal
+    },
+    closeModal() {
+      this.showResumeList = false // Close the modal
+    },
+    openResume(id) {
+      this.$router.push({ name: 'resumeEditor', params: { id } })
+    },
+    formatDate(dateString) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' }
+      return new Date(dateString).toLocaleDateString(undefined, options)
     },
   },
 }
 </script>
 
 <style scoped>
+/* Existing styles remain unchanged */
+
 .app-home {
   min-height: 100vh;
   background-color: #f8f8f8;
@@ -219,5 +258,43 @@ export default {
 .resume-date {
   font-size: 0.85rem;
   color: #666;
+}
+
+/* Modal Styles */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  position: relative;
+}
+
+.close-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #811429;
+}
+
+.close-button:hover {
+  color: #c00;
 }
 </style>

@@ -17,6 +17,7 @@
 
     <!-- Dropdown Menu -->
     <div v-if="dropdownVisible" class="dropdown-menu">
+      <button @click="myInfo">My Info</button>
       <button @click="logout">Logout</button>
     </div>
   </nav>
@@ -33,6 +34,10 @@ export default {
   methods: {
     toggleDropdown() {
       this.dropdownVisible = !this.dropdownVisible
+    },
+    myInfo() {
+      // Placeholder function for "My Info"
+      console.log('My Info clicked')
     },
     logout() {
       // Clear tokens in localStorage

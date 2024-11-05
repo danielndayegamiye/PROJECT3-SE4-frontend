@@ -1,0 +1,239 @@
+<template>
+  <div>
+    <!-- Navbar Component with updated color -->
+    <Nav class="navbar" />
+
+    <!-- Header description to guide the user -->
+    <div class="header-description">
+      <h1>Welcome to the Resume Builder!</h1>
+      <p>
+        Please fill out your personal information and complete each section of
+        your resume by clicking the plus button. Once you're done, click
+        "Generate Resume" to create your personalized resume.
+      </p>
+    </div>
+
+    <!-- Resume Sections -->
+    <div class="resume-sections">
+      <!-- Personal Info Section -->
+      <div class="section">
+        <h2>Personal Info</h2>
+        <!-- Plus icon to open personal info modal -->
+        <button class="plus-icon" @click="openPersonalInfoModal">+</button>
+      </div>
+
+      <!-- Modal for Personal Info -->
+      <PersonalInfoModal
+        :showModal="personalInfoModalVisible"
+        @close-modal="closePersonalInfoModal"
+      />
+
+      <!-- Other Resume Sections -->
+      <div class="section" v-for="section in sections" :key="section.name">
+        <h2>{{ section.name }}</h2>
+        <!-- Plus icon to open modal -->
+        <button class="plus-icon" @click="openModal(section.name)">+</button>
+      </div>
+
+      <!-- Modal for other sections -->
+      <div v-if="modalVisible" class="modal">
+        <div class="modal-content">
+          <span class="close-button" @click="closeModal">&times;</span>
+          <p>{{ activeSection }} Content Placeholder</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generate Resume Button -->
+    <div class="generate-resume">
+      <v-btn color="primary" @click="generateResume">Generate Resume</v-btn>
+    </div>
+  </div>
+</template>
+
+<script>
+import Nav from '../components/nav.vue'
+import PersonalInfoModal from '../components/PersonalInfo.vue' // Importing the Personal Info modal
+
+export default {
+  components: {
+    Nav,
+    PersonalInfoModal, // Register PersonalInfoModal component
+  },
+  data() {
+    return {
+      sections: [
+        { name: 'Education' },
+        { name: 'Experience' },
+        { name: 'Skills' },
+        { name: 'Projects' },
+        { name: 'Interests' }, // New section
+        { name: 'Links' }, // New section
+        { name: 'Course Work' }, // New section
+        { name: 'Awards' }, // New section
+      ],
+      modalVisible: false,
+      personalInfoModalVisible: false, // Modal visibility for personal info
+      activeSection: '',
+    }
+  },
+  methods: {
+    // Method to open modal for regular sections
+    openModal(sectionName) {
+      this.activeSection = sectionName
+      this.modalVisible = true
+    },
+    closeModal() {
+      this.modalVisible = false
+      this.activeSection = ''
+    },
+    // Methods for handling personal info modal
+    openPersonalInfoModal() {
+      this.personalInfoModalVisible = true
+    },
+    closePersonalInfoModal() {
+      this.personalInfoModalVisible = false
+    },
+    // Empty method for generating resume
+    generateResume() {
+      console.log('Generate Resume button clicked!')
+      // Logic for generating resume will go here
+    },
+  },
+}
+</script>
+
+<style scoped>
+/* New styling for the navbar */
+.navbar {
+  background-color: #82152b; /* Set the new navbar color */
+  color: white;
+  padding: 1rem;
+}
+
+/* Header description styling */
+.header-description {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.header-description h1 {
+  color: #82152b;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.header-description p {
+  color: #333;
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Styling for the resume sections container */
+.resume-sections {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 900px;
+  margin: 0 auto; /* Center the content */
+}
+
+/* Styling for individual sections */
+.section {
+  border: 1px solid #ddd;
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  position: relative;
+  transition: box-shadow 0.3s ease; /* Add a smooth shadow effect */
+}
+
+.section:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
+}
+
+/* Plus icon styling */
+.plus-icon {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: #82152b;
+  cursor: pointer;
+  transition: transform 0.3s ease; /* Add animation */
+}
+
+.plus-icon:hover {
+  transform: scale(1.2); /* Scale up the icon on hover */
+}
+
+/* Modal overlay styling */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modal content box styling */
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 400px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Box shadow for better appearance */
+}
+
+/* Close button styling */
+.close-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Styling for the Generate Resume button */
+.generate-resume {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+/* Additional styling to make the layout look more polished */
+h2 {
+  font-size: 1.4rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+button {
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  /* Responsive design adjustments for smaller screens */
+  .resume-sections {
+    padding: 1rem;
+  }
+
+  .section {
+    padding: 1rem;
+  }
+
+  .modal-content {
+    width: 90%;
+  }
+}
+</style>

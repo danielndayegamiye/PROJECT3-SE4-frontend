@@ -3,23 +3,14 @@
     <v-card class="modal-card" elevation="3">
       <v-card-title class="modal-title">Skills</v-card-title>
       <v-card-text>
-        <v-list :items="skills"></v-list>
-        <v-form v-if="showTextField">
-          <v-text-field label="Skill" class="text-field">
-            <template v-slot:append>
-              <v-icon @click="closeTextField" style="cursor: pointer">
-                mdi-check
-              </v-icon>
-            </template>
-          </v-text-field>
+        <v-form>
+          <v-text-field label="Skill" class="text-field"></v-text-field>
         </v-form>
-        <v-btn icon="$vuetify" @click="openTextField">
-          <v-icon size="small">mdi-plus</v-icon>
-        </v-btn>
       </v-card-text>
       <v-card-actions class="actions">
         <div class="button-container">
-          <v-btn @click="closeModal" class="cancel-button" text>Back</v-btn>
+          <v-btn @click="closeModal" class="cancel-button" text>Cancel</v-btn>
+          <v-btn color="primary" @click="closeModal">Save</v-btn>
         </div>
       </v-card-actions>
     </v-card>
@@ -65,12 +56,6 @@ export default {
       this.$emit('close-modal')
       this.showTextField = false
     },
-    openTextField() {
-      this.showTextField = true
-    },
-    closeTextField() {
-      this.showTextField = false
-    },
   },
 }
 </script>
@@ -106,7 +91,6 @@ export default {
 
 .text-field {
   margin: 12px 0;
-  width: 98%;
 }
 
 .actions {

@@ -1,7 +1,7 @@
 <template>
   <!-- Header with Navigation Bar -->
   <header class="app-header">
-    <Nav />
+    <NavBar />
   </header>
 
   <v-container class="app-home" fluid>
@@ -71,14 +71,14 @@
 </template>
 
 <script>
-import Nav from '../components/Nav.vue'
+import NavBar from '../components/nav.vue'
 import ResumeList from '../components/ResumeList.vue'
 import apiClient from '../services/services.js'
 
 export default {
   name: 'AppHome',
   components: {
-    Nav,
+    NavBar,
     ResumeList,
   },
   data() {

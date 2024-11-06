@@ -1,0 +1,128 @@
+<template>
+  <div v-if="showModal" class="modal-overlay">
+    <v-card class="modal-card" elevation="3">
+      <v-card-title class="modal-title">Skills</v-card-title>
+      <v-card-text>
+        <v-list :items="skills"></v-list>
+        <v-form v-if="showTextField">
+          <v-text-field label="Skill" class="text-field">
+            <template v-slot:append>
+              <v-icon @click="closeTextField" style="cursor: pointer">
+                mdi-check
+              </v-icon>
+            </template>
+          </v-text-field>
+        </v-form>
+        <v-btn icon="$vuetify" @click="openTextField">
+          <v-icon size="small">mdi-plus</v-icon>
+        </v-btn>
+      </v-card-text>
+      <v-card-actions class="actions">
+        <div class="button-container">
+          <v-btn @click="closeModal" class="cancel-button" text>Back</v-btn>
+        </div>
+      </v-card-actions>
+    </v-card>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'SkillsModal',
+  props: {
+    showModal: Boolean,
+  },
+  data() {
+    return {
+      showTextField: false,
+      skills: [
+        {
+          title: 'Vue',
+          value: 1,
+          props: {
+            appendIcon: 'mdi-delete',
+          },
+        },
+        {
+          title: 'Javascript',
+          value: 2,
+          props: {
+            appendIcon: 'mdi-delete',
+          },
+        },
+        {
+          title: 'Node.js',
+          value: 3,
+          props: {
+            appendIcon: 'mdi-delete',
+          },
+        },
+      ],
+    }
+  },
+  methods: {
+    closeModal() {
+      this.$emit('close-modal')
+      this.showTextField = false
+    },
+    openTextField() {
+      this.showTextField = true
+    },
+    closeTextField() {
+      this.showTextField = false
+    },
+  },
+}
+</script>
+
+<style scoped>
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
+  width: 90%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.modal-title {
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.text-field {
+  margin: 12px 0;
+  width: 98%;
+}
+
+.actions {
+  justify-content: flex-end;
+}
+
+.button-container {
+  display: flex;
+  gap: 8px;
+}
+
+.cancel-button {
+  color: #3c3c3c;
+}
+
+.cancel-button:hover {
+  color: #2c2c2c;
+}
+</style>

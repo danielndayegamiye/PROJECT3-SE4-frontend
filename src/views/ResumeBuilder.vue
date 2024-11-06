@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Navbar Component with updated color -->
-    <Nav class="navbar" />
+    <NavBar class="navbar" />
 
     <!-- Header description to guide the user -->
     <div class="header-description">
@@ -28,6 +28,16 @@
         @close-modal="closePersonalInfoModal"
       />
 
+      <div class="section">
+        <h2>Skills</h2>
+        <button class="plus-icon" @click="openSkillsModal">+</button>
+      </div>
+
+      <SkillsModal
+        :showModal="skillsModalVisible"
+        @close-modal="closeSkillsModal"
+      />
+
       <!-- Other Resume Sections -->
       <div class="section" v-for="section in sections" :key="section.name">
         <h2>{{ section.name }}</h2>
@@ -52,20 +62,21 @@
 </template>
 
 <script>
-import Nav from '../components/nav.vue'
+import NavBar from '../components/nav.vue'
 import PersonalInfoModal from '../components/PersonalInfo.vue' // Importing the Personal Info modal
+import SkillsModal from '../components/SkillsModal.vue' //Importing the Skills Modal
 
 export default {
   components: {
-    Nav,
+    NavBar,
     PersonalInfoModal, // Register PersonalInfoModal component
+    SkillsModal, //Register SkillsModal component
   },
   data() {
     return {
       sections: [
         { name: 'Education' },
         { name: 'Experience' },
-        { name: 'Skills' },
         { name: 'Projects' },
         { name: 'Interests' }, // New section
         { name: 'Links' }, // New section
@@ -74,6 +85,7 @@ export default {
       ],
       modalVisible: false,
       personalInfoModalVisible: false, // Modal visibility for personal info
+      skillsModalVisible: false,
       activeSection: '',
     }
   },
@@ -93,6 +105,12 @@ export default {
     },
     closePersonalInfoModal() {
       this.personalInfoModalVisible = false
+    },
+    openSkillsModal() {
+      this.skillsModalVisible = true
+    },
+    closeSkillsModal() {
+      this.skillsModalVisible = false
     },
     // Empty method for generating resume
     generateResume() {

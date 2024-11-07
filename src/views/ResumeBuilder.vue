@@ -30,8 +30,25 @@
 
       <!-- Skills Section -->
       <div class="section">
-        <h2>Skills</h2>
+        <h2 @click="toggleSkillsExpand">
+          Skills
+          <v-icon
+            :class="{ rotated: skillsExpanded }"
+            class="arrow-icon"
+            size="small"
+            >mdi-chevron-down</v-icon
+          >
+        </h2>
         <button class="plus-icon" @click="openSkillsModal">+</button>
+
+        <v-expand-transition>
+          <div v-show="skillsExpanded" class="expanded-content">
+            <!-- Place your expandable skills content here -->
+            <p>
+              <v-list class="skills-list" :items="skills"></v-list>
+            </p>
+          </div>
+        </v-expand-transition>
       </div>
 
       <!-- Modal for Skills -->
@@ -122,12 +139,36 @@ export default {
         { name: 'Course Work' }, // New section
         { name: 'Awards' }, // New section
       ],
+      skills: [
+        {
+          title: 'Vue',
+          value: 1,
+          props: {
+            appendIcon: 'mdi-delete',
+          },
+        },
+        {
+          title: 'Javascript',
+          value: 2,
+          props: {
+            appendIcon: 'mdi-delete',
+          },
+        },
+        {
+          title: 'Node.js',
+          value: 3,
+          props: {
+            appendIcon: 'mdi-delete',
+          },
+        },
+      ],
       modalVisible: false,
       personalInfoModalVisible: false, // Modal visibility for personal info
       skillsModalVisible: false,
       educationModalVisible: false,
       projectsModalVisible: false,
       experienceModalVisible: false,
+      skillsExpanded: false,
       activeSection: '',
     }
   },
@@ -171,6 +212,9 @@ export default {
     },
     closeExperienceModal() {
       this.experienceModalVisible = false
+    },
+    toggleSkillsExpand() {
+      this.skillsExpanded = !this.skillsExpanded
     },
     // Empty method for generating resume
     generateResume() {
@@ -236,7 +280,7 @@ export default {
 .plus-icon {
   position: absolute;
   right: 1rem;
-  bottom: 1rem;
+  bottom: 3rem;
   font-size: 1.5rem;
   background: none;
   border: none;
@@ -247,6 +291,22 @@ export default {
 
 .plus-icon:hover {
   transform: scale(1.2); /* Scale up the icon on hover */
+}
+
+.arrow-icon {
+  position: absolute;
+  right: 0.67rem;
+  bottom: 1rem;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: #82152b;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.arrow-icon:hover {
+  transform: scale(1.2);
 }
 
 /* Modal overlay styling */
@@ -298,6 +358,19 @@ h2 {
 
 button {
   cursor: pointer;
+}
+
+.rotated {
+  transform: rotate(180deg);
+  transition: transform 0.3s ease;
+}
+
+.expanded-content {
+  padding: 1rem 0;
+}
+
+.skills-list {
+  width: 90%;
 }
 
 @media (max-width: 768px) {

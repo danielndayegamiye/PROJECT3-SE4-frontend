@@ -4,13 +4,14 @@
       <v-card-title class="modal-title">Skills</v-card-title>
       <v-card-text>
         <v-form>
-          <v-text-field label="Skill" class="text-field"></v-text-field>
+          <v-text-field v-model="newSkill" label="Skill" class="text-field">
+          </v-text-field>
         </v-form>
       </v-card-text>
       <v-card-actions class="actions">
         <div class="button-container">
           <v-btn @click="closeModal" class="cancel-button" text>Cancel</v-btn>
-          <v-btn color="primary" @click="closeModal">Save</v-btn>
+          <v-btn color="primary" @click="saveSkill">Save</v-btn>
         </div>
       </v-card-actions>
     </v-card>
@@ -18,6 +19,9 @@
 </template>
 
 <script>
+import SkillServices from '../services/skillsServices'
+import Utils from '../config/utils.js'
+
 export default {
   name: 'SkillsModal',
   props: {
@@ -25,36 +29,27 @@ export default {
   },
   data() {
     return {
-      showTextField: false,
-      skills: [
-        {
-          title: 'Vue',
-          value: 1,
-          props: {
-            appendIcon: 'mdi-delete',
-          },
-        },
-        {
-          title: 'Javascript',
-          value: 2,
-          props: {
-            appendIcon: 'mdi-delete',
-          },
-        },
-        {
-          title: 'Node.js',
-          value: 3,
-          props: {
-            appendIcon: 'mdi-delete',
-          },
-        },
-      ],
+      newSkill: '', // Holds the value of the skill entered by the user
     }
   },
   methods: {
     closeModal() {
       this.$emit('close-modal')
-      this.showTextField = false
+      this.newSkill = '' // Clear the skill input field
+    },
+    async saveSkill() {
+      if (this.newSkill.trim()) {
+        try {
+          const userId = Utils.getStore('user').userId // Retrieve userId from Utils
+          const skillData = { name: this.newSkill, userId } // Add userId to skillData
+
+          await SkillServices.createSkill(skillData) // Call createSkill with skillData
+          this.closeModal() // Close the modal on success
+          this.$emit('skill-added') // Emit an event to notify the parent component
+        } catch (error) {
+          console.error('Failed to add skill:', error)
+        }
+      }
     },
   },
 }

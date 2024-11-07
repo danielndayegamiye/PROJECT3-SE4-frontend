@@ -43,10 +43,13 @@
 
         <v-expand-transition>
           <div v-show="skillsExpanded" class="expanded-content">
-            <!-- Place your expandable skills content here -->
-            <p>
-              <v-list class="skills-list" :items="skills"></v-list>
-            </p>
+            <v-list dense>
+              <v-list-item v-for="skill in skills" :key="skill.id">
+                <v-list-item-content>
+                  <v-list-item-title>{{ skill.name }}</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
           </div>
         </v-expand-transition>
       </div>
@@ -121,6 +124,8 @@ import SkillsModal from '../components/SkillsModal.vue' //Importing the Skills M
 import EducationModal from '../components/educationModal.vue' //Importing the education Modal
 import ProjectsModal from '../components/ProjectsModal.vue' //Importing the projects Modal
 import ExperienceModal from '@/components/ExperienceModal.vue' //Importing the Experience Modal
+import Utils from '../config/utils'
+import SkillServices from '@/services/skillsServices'
 
 export default {
   components: {
@@ -131,6 +136,10 @@ export default {
     ProjectsModal, //Register ProjectsModal component
     ExperienceModal,
   },
+  created() {
+    this.fetchSkills()
+  },
+
   data() {
     return {
       sections: [
@@ -139,29 +148,7 @@ export default {
         { name: 'Course Work' }, // New section
         { name: 'Awards' }, // New section
       ],
-      skills: [
-        {
-          title: 'Vue',
-          value: 1,
-          props: {
-            appendIcon: 'mdi-delete',
-          },
-        },
-        {
-          title: 'Javascript',
-          value: 2,
-          props: {
-            appendIcon: 'mdi-delete',
-          },
-        },
-        {
-          title: 'Node.js',
-          value: 3,
-          props: {
-            appendIcon: 'mdi-delete',
-          },
-        },
-      ],
+      skills: [],
       modalVisible: false,
       personalInfoModalVisible: false, // Modal visibility for personal info
       skillsModalVisible: false,
@@ -182,6 +169,21 @@ export default {
       this.modalVisible = false
       this.activeSection = ''
     },
+    async fetchSkills() {
+      try {
+        const userId = Utils.getStore('user').userId // Retrieve userId from Utils
+        const response = await SkillServices.getSkillsByUserId(userId) // Fetch skills from the server
+        this.skills = response.data.map(skill => ({
+          ...skill,
+          props: {
+            appendIcon: 'mdi-delete',
+          },
+        }))
+        console.log('Here: ' + this.skills)
+      } catch (error) {
+        console.error('Failed to fetch skills:', error)
+      }
+    },
     // Methods for handling personal info modal
     openPersonalInfoModal() {
       this.personalInfoModalVisible = true
@@ -194,6 +196,7 @@ export default {
     },
     closeSkillsModal() {
       this.skillsModalVisible = false
+      this.fetchSkills()
     },
     openEducationModal() {
       this.educationModalVisible = true

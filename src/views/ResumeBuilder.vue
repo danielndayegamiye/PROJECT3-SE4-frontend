@@ -27,12 +27,14 @@
         :showModal="personalInfoModalVisible"
         @close-modal="closePersonalInfoModal"
       />
+
       <!-- Skills Section -->
       <div class="section">
         <h2>Skills</h2>
         <button class="plus-icon" @click="openSkillsModal">+</button>
       </div>
 
+      <!-- Modal for Skills -->
       <SkillsModal
         :showModal="skillsModalVisible"
         @close-modal="closeSkillsModal"
@@ -47,7 +49,19 @@
       <EducationModal
         :showModal="educationModalVisible"
         @close-modal="closeEducationModal"
-      />
+      ></EducationModal>
+
+      <!-- Experience Section -->
+      <div class="section">
+        <h2>Experience</h2>
+        <button class="plus-icon" @click="openExperienceModal">+</button>
+      </div>
+
+      <!-- Modal for Experience -->
+      <ExperienceModal
+        :show-modal="experienceModalVisible"
+        @close-modal="closeExperienceModal"
+      ></ExperienceModal>
 
       <!-- Other Resume Sections -->
       <div class="section" v-for="section in sections" :key="section.name">
@@ -77,6 +91,7 @@ import NavBar from '../components/nav.vue'
 import PersonalInfoModal from '../components/PersonalInfo.vue' // Importing the Personal Info modal
 import SkillsModal from '../components/SkillsModal.vue' //Importing the Skills Modal
 import EducationModal from '../components/educationModal.vue' //Importing the education Modal
+import ExperienceModal from '@/components/ExperienceModal.vue'
 
 export default {
   components: {
@@ -84,11 +99,11 @@ export default {
     PersonalInfoModal, // Register PersonalInfoModal component
     SkillsModal, //Register SkillsModal component
     EducationModal, //Register EducationModal component
+    ExperienceModal,
   },
   data() {
     return {
       sections: [
-        { name: 'Experience' },
         { name: 'Projects' },
         { name: 'Interests' }, // New section
         { name: 'Links' }, // New section
@@ -99,6 +114,7 @@ export default {
       personalInfoModalVisible: false, // Modal visibility for personal info
       skillsModalVisible: false,
       educationModalVisible: false,
+      experienceModalVisible: false,
       activeSection: '',
     }
   },
@@ -130,7 +146,12 @@ export default {
     },
     closeEducationModal() {
       this.educationModalVisible = false
-      console.log("Closing modal")
+    },
+    openExperienceModal() {
+      this.experienceModalVisible = true
+    },
+    closeExperienceModal() {
+      this.experienceModalVisible = false
     },
     // Empty method for generating resume
     generateResume() {

@@ -40,6 +40,17 @@
         @close-modal="closeSkillsModal"
       />
 
+      <!-- Education Section -->
+      <div class="section">
+        <h2>Education</h2>
+        <button class="plus-icon" @click="openEducationModal">+</button>
+      </div>
+
+      <EducationModal
+        :showModal="educationModalVisible"
+        @close-modal="closeEducationModal"
+      ></EducationModal>
+
       <!-- Experience Section -->
       <div class="section">
         <h2>Experience</h2>
@@ -50,7 +61,7 @@
       <ExperienceModal
         :show-modal="experienceModalVisible"
         @close-modal="closeExperienceModal"
-      />
+      ></ExperienceModal>
 
       <!-- Other Resume Sections -->
       <div class="section" v-for="section in sections" :key="section.name">
@@ -79,6 +90,7 @@
 import NavBar from '../components/nav.vue'
 import PersonalInfoModal from '../components/PersonalInfo.vue' // Importing the Personal Info modal
 import SkillsModal from '../components/SkillsModal.vue' //Importing the Skills Modal
+import EducationModal from '../components/educationModal.vue' //Importing the education Modal
 import ExperienceModal from '@/components/ExperienceModal.vue'
 
 export default {
@@ -86,12 +98,12 @@ export default {
     NavBar,
     PersonalInfoModal, // Register PersonalInfoModal component
     SkillsModal, //Register SkillsModal component
+    EducationModal, //Register EducationModal component
     ExperienceModal,
   },
   data() {
     return {
       sections: [
-        { name: 'Education' },
         { name: 'Projects' },
         { name: 'Interests' }, // New section
         { name: 'Links' }, // New section
@@ -101,6 +113,7 @@ export default {
       modalVisible: false,
       personalInfoModalVisible: false, // Modal visibility for personal info
       skillsModalVisible: false,
+      educationModalVisible: false,
       experienceModalVisible: false,
       activeSection: '',
     }
@@ -127,6 +140,12 @@ export default {
     },
     closeSkillsModal() {
       this.skillsModalVisible = false
+    },
+    openEducationModal() {
+      this.educationModalVisible = true
+    },
+    closeEducationModal() {
+      this.educationModalVisible = false
     },
     openExperienceModal() {
       this.experienceModalVisible = true

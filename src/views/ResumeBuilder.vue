@@ -28,14 +28,28 @@
         @close-modal="closePersonalInfoModal"
       />
 
+      <!-- Skills Section -->
       <div class="section">
         <h2>Skills</h2>
         <button class="plus-icon" @click="openSkillsModal">+</button>
       </div>
 
+      <!-- Modal for Skills -->
       <SkillsModal
         :showModal="skillsModalVisible"
         @close-modal="closeSkillsModal"
+      />
+
+      <!-- Experience Section -->
+      <div class="section">
+        <h2>Experience</h2>
+        <button class="plus-icon" @click="openExperienceModal">+</button>
+      </div>
+
+      <!-- Modal for Experience -->
+      <ExperienceModal
+        :show-modal="experienceModalVisible"
+        @close-modal="closeExperienceModal"
       />
 
       <!-- Other Resume Sections -->
@@ -65,18 +79,19 @@
 import NavBar from '../components/nav.vue'
 import PersonalInfoModal from '../components/PersonalInfo.vue' // Importing the Personal Info modal
 import SkillsModal from '../components/SkillsModal.vue' //Importing the Skills Modal
+import ExperienceModal from '@/components/ExperienceModal.vue'
 
 export default {
   components: {
     NavBar,
     PersonalInfoModal, // Register PersonalInfoModal component
     SkillsModal, //Register SkillsModal component
+    ExperienceModal,
   },
   data() {
     return {
       sections: [
         { name: 'Education' },
-        { name: 'Experience' },
         { name: 'Projects' },
         { name: 'Interests' }, // New section
         { name: 'Links' }, // New section
@@ -86,6 +101,7 @@ export default {
       modalVisible: false,
       personalInfoModalVisible: false, // Modal visibility for personal info
       skillsModalVisible: false,
+      experienceModalVisible: false,
       activeSection: '',
     }
   },
@@ -111,6 +127,12 @@ export default {
     },
     closeSkillsModal() {
       this.skillsModalVisible = false
+    },
+    openExperienceModal() {
+      this.experienceModalVisible = true
+    },
+    closeExperienceModal() {
+      this.experienceModalVisible = false
     },
     // Empty method for generating resume
     generateResume() {

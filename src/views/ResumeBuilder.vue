@@ -230,7 +230,7 @@ export default {
       this.educationModalVisible = false
     },
     openInterestsModal() {
-      this.interestModalVisible = true
+      this.interestsModalVisible = true
     },
     closeInterestsModal() {
       this.interestsModalVisible = false

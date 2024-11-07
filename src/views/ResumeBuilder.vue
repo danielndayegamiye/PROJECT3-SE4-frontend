@@ -71,6 +71,17 @@
         @close-modal="closeEducationModal"
       ></EducationModal>
 
+      <!-- Interests Section -->
+      <div class="section">
+        <h2>Interests</h2>
+        <button class="plus-icon" @click="openInterestsModal">+</button>
+      </div>
+
+      <InterestsModal
+        :showModal="interestsModalVisible"
+        @close-modal="closeInterestsModal"
+      ></InterestsModal>
+
       <!-- Links Section -->
       <div class="section">
         <h2>Links</h2>
@@ -133,6 +144,7 @@ import NavBar from '../components/nav.vue'
 import PersonalInfoModal from '../components/PersonalInfo.vue' // Importing the Personal Info modal
 import SkillsModal from '../components/SkillsModal.vue' //Importing the Skills Modal
 import EducationModal from '../components/educationModal.vue' //Importing the education Modal
+import InterestsModal from '../components/InterestsModal.vue' //Importing the interests Modal
 import ProjectsModal from '../components/ProjectsModal.vue' //Importing the projects Modal
 import ExperienceModal from '@/components/ExperienceModal.vue' //Importing the Experience Modal
 import Utils from '../config/utils'
@@ -148,6 +160,7 @@ export default {
     ProjectsModal, //Register ProjectsModal component
     ExperienceModal,
     LinksModal,
+    InterestsModal,
   },
   created() {
     this.fetchSkills()
@@ -156,7 +169,6 @@ export default {
   data() {
     return {
       sections: [
-        { name: 'Interests' }, // New section
         { name: 'Awards' }, // New section
       ],
       skills: [],
@@ -164,6 +176,7 @@ export default {
       personalInfoModalVisible: false, // Modal visibility for personal info
       skillsModalVisible: false,
       educationModalVisible: false,
+      interestsModalVisible: false,
       linksModalVisible: false,
       projectsModalVisible: false,
       experienceModalVisible: false,
@@ -215,6 +228,12 @@ export default {
     },
     closeEducationModal() {
       this.educationModalVisible = false
+    },
+    openInterestsModal() {
+      this.interestModalVisible = true
+    },
+    closeInterestsModal() {
+      this.interestsModalVisible = false
     },
     openLinksModal() {
       this.linksModalVisible = true

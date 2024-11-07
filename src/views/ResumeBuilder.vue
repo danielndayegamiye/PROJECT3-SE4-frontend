@@ -71,6 +71,17 @@
         @close-modal="closeEducationModal"
       ></EducationModal>
 
+      <!-- Links Section -->
+      <div class="section">
+        <h2>Links</h2>
+        <button class="plus-icon" @click="openLinksModal">+</button>
+      </div>
+
+      <LinksModal
+        :showModal="linksModalVisible"
+        @close-modal="closeLinksModal"
+      ></LinksModal>
+
       <!-- Experience Section -->
       <div class="section">
         <h2>Experience</h2>
@@ -126,6 +137,7 @@ import ProjectsModal from '../components/ProjectsModal.vue' //Importing the proj
 import ExperienceModal from '@/components/ExperienceModal.vue' //Importing the Experience Modal
 import Utils from '../config/utils'
 import SkillServices from '@/services/skillsServices'
+import LinksModal from '../components/LinksModal.vue' //Importing the links Modal
 
 export default {
   components: {
@@ -135,6 +147,7 @@ export default {
     EducationModal, //Register EducationModal component
     ProjectsModal, //Register ProjectsModal component
     ExperienceModal,
+    LinksModal,
   },
   created() {
     this.fetchSkills()
@@ -144,8 +157,6 @@ export default {
     return {
       sections: [
         { name: 'Interests' }, // New section
-        { name: 'Links' }, // New section
-        { name: 'Course Work' }, // New section
         { name: 'Awards' }, // New section
       ],
       skills: [],
@@ -153,6 +164,7 @@ export default {
       personalInfoModalVisible: false, // Modal visibility for personal info
       skillsModalVisible: false,
       educationModalVisible: false,
+      linksModalVisible: false,
       projectsModalVisible: false,
       experienceModalVisible: false,
       skillsExpanded: false,
@@ -203,6 +215,12 @@ export default {
     },
     closeEducationModal() {
       this.educationModalVisible = false
+    },
+    openLinksModal() {
+      this.linksModalVisible = true
+    },
+    closeLinksModal() {
+      this.linksModalVisible = false
     },
     openProjectsModal() {
       this.projectsModalVisible = true

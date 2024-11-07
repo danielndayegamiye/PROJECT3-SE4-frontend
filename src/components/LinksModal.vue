@@ -1,23 +1,17 @@
 <template>
   <div v-if="showModal" class="modal-overlay">
     <v-card class="modal-card" elevation="3">
-      <v-card-title class="modal-title">Education</v-card-title>
+      <v-card-title class="modal-title">Links</v-card-title>
       <v-card-text>
         <v-form>
           <v-text-field 
-            label="Institution" 
+            label="Name" 
             class="text-field">
           </v-text-field>
           <v-text-field
-            label="Degree or Study"
+            label="URL"
             class="text-field"
           ></v-text-field>
-          <v-text-field
-            label="Graduation date"
-            class="text-field"
-          ></v-text-field>
-          <v-text-field label="GPA" class="text-field"></v-text-field>
-          <v-text-field label="Relevant Work" class="text-field"></v-text-field>
         </v-form>
       </v-card-text>
       <v-card-actions class="actions">
@@ -32,7 +26,7 @@
 
 <script>
 export default {
-  name: 'EducationModal',
+  name: 'LinksModal',
   props: {
     showModal: Boolean,
   },

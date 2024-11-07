@@ -35,21 +35,6 @@
             rows="3"
             class="text-field"
           ></v-textarea>
-          <v-text-field
-            label="Skills Used"
-            outlined
-            class="text-field"
-          ></v-text-field>
-          <v-text-field
-            label="Employment Type"
-            outlined
-            class="text-field"
-          ></v-text-field>
-          <v-text-field
-            label="Achievements (Optional)"
-            outlined
-            class="text-field"
-          ></v-text-field>
         </v-form>
       </v-card-text>
       <v-card-actions class="actions">

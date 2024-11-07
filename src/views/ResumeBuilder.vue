@@ -38,6 +38,19 @@
         @close-modal="closeSkillsModal"
       />
 
+      <!-- Education Section -->
+      <div class="section">
+        <h2>Education</h2>
+        <!-- Plus icon to open Education modal -->
+        <button class="plus-icon" @click="openEducationModal">+</button>
+      </div>
+
+      <!-- Modal for Education -->
+      <EducationModal
+        :showModal="educationModalVisible"
+        @close-modal="closeEducationModal"
+      />
+
       <!-- Other Resume Sections -->
       <div class="section" v-for="section in sections" :key="section.name">
         <h2>{{ section.name }}</h2>
@@ -65,17 +78,18 @@
 import NavBar from '../components/nav.vue'
 import PersonalInfoModal from '../components/PersonalInfo.vue' // Importing the Personal Info modal
 import SkillsModal from '../components/SkillsModal.vue' //Importing the Skills Modal
+import EducationModal from '../components/EducationModal.vue' // Importing the Education Modal
 
 export default {
   components: {
     NavBar,
     PersonalInfoModal, // Register PersonalInfoModal component
     SkillsModal, //Register SkillsModal component
+    EducationModal, // Register EducationModal component
   },
   data() {
     return {
       sections: [
-        { name: 'Education' },
         { name: 'Experience' },
         { name: 'Projects' },
         { name: 'Interests' }, // New section
@@ -86,6 +100,7 @@ export default {
       modalVisible: false,
       personalInfoModalVisible: false, // Modal visibility for personal info
       skillsModalVisible: false,
+      educationModalVisible: false, // Modal visibility for education
       activeSection: '',
     }
   },
@@ -111,6 +126,12 @@ export default {
     },
     closeSkillsModal() {
       this.skillsModalVisible = false
+    },
+    openEducationModal() {
+      this.educationModalVisible = true
+    },
+    closeEducationModal() {
+      this.educationModalVisible = false
     },
     // Empty method for generating resume
     generateResume() {

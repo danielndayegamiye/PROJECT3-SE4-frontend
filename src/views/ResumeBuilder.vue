@@ -191,10 +191,8 @@ export default {
     InterestsModal,
   },
   created() {
-    this.fetchSkills(),
-    this.fetchEducation()
+    this.fetchSkills(), this.fetchEducation()
   },
- 
 
   data() {
     return {
@@ -202,7 +200,7 @@ export default {
         { name: 'Awards' }, // New section
       ],
       skills: [],
-      education:[],
+      education: [],
       modalVisible: false,
       personalInfoModalVisible: false, // Modal visibility for personal info
       skillsModalVisible: false,
@@ -243,17 +241,17 @@ export default {
     },
     async fetchEducation() {
       try {
-        const userId = Utils.getStore('user').userId; // Retrieve userId from Utils
-        const response = await EducationServices.getEducationByUserId(userId); // Fetch education from the server
+        const userId = Utils.getStore('user').userId // Retrieve userId from Utils
+        const response = await EducationServices.getEducationByUserId(userId) // Fetch education from the server
         this.education = response.data.map(edu => ({
           ...edu,
           props: {
             appendIcon: 'mdi-delete',
           },
-        }));
-        console.log('Fetched Education:', this.education);
+        }))
+        console.log('Fetched Education:', this.education)
       } catch (error) {
-        console.error('Failed to fetch education:', error);
+        console.error('Failed to fetch education:', error)
       }
     },
 
@@ -276,6 +274,7 @@ export default {
     },
     closeEducationModal() {
       this.educationModalVisible = false
+      this.fetchEducation()
     },
     openInterestsModal() {
       this.interestsModalVisible = true
@@ -305,7 +304,7 @@ export default {
       this.skillsExpanded = !this.skillsExpanded
     },
     toggleEducationExpand() {
-      this.educationExpanded = !this.educationExpanded;
+      this.educationExpanded = !this.educationExpanded
     },
     // Empty method for generating resume
     generateResume() {

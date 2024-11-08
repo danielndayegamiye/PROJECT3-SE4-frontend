@@ -43,11 +43,18 @@
 
         <v-expand-transition>
           <div v-show="skillsExpanded" class="expanded-content">
-            <v-list dense>
-              <v-list-item v-for="skill in skills" :key="skill.id">
-                <v-list-item-content>
-                  <v-list-item-title>{{ skill.name }}</v-list-item-title>
-                </v-list-item-content>
+            <v-list class="skills-list" dense>
+              <v-list-item
+                v-for="skill in skills"
+                :key="skill.id"
+                class="list-item"
+                density="compact"
+                append-icon="mdi-delete"
+                :title="skill.name"
+              >
+                <template v-slot:prepend
+                  ><v-checkbox-btn></v-checkbox-btn
+                ></template>
               </v-list-item>
             </v-list>
           </div>
@@ -349,6 +356,31 @@ export default {
   transform: scale(1.2);
 }
 
+.checkbox {
+  margin-right: 8px;
+  margin-top: 1.3rem;
+}
+
+.skill-item {
+  display: flex;
+  align-items: center;
+}
+
+.delete-icon {
+  position: absolute;
+  right: 0.67rem;
+  bottom: 2.9rem;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.delete-icon:hover {
+  transform: scale(1.2);
+}
+
 /* Modal overlay styling */
 .modal {
   position: fixed;
@@ -411,6 +443,13 @@ button {
 
 .skills-list {
   width: 90%;
+  margin-bottom: 1px;
+  padding: 4px 16px;
+}
+
+.list-item {
+  padding: 4px 16px;
+  margin-bottom: 1px;
 }
 
 @media (max-width: 768px) {

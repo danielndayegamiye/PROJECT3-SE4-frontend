@@ -43,15 +43,18 @@
 
         <v-expand-transition>
           <div v-show="skillsExpanded" class="expanded-content">
-            <v-list class="skills-list" dense>
+            <v-list class="list" dense>
               <v-list-item
                 v-for="skill in skills"
                 :key="skill.id"
                 class="list-item"
                 density="compact"
-                append-icon="mdi-delete"
                 :title="skill.name"
               >
+                <template v-slot:append
+                  ><v-icon class="icon mr-4">mdi-pencil</v-icon
+                  ><v-icon class="icon">mdi-delete</v-icon></template
+                >
                 <template v-slot:prepend
                   ><v-checkbox-btn></v-checkbox-btn
                 ></template>
@@ -83,11 +86,21 @@
 
         <v-expand-transition>
           <div v-show="educationExpanded" class="expanded-content">
-            <v-list dense>
-              <v-list-item v-for="edu in education" :key="edu.id">
-                <v-list-item-content>
-                  <v-list-item-title>{{ edu.institution }}</v-list-item-title>
-                </v-list-item-content>
+            <v-list class="list" dense>
+              <v-list-item
+                v-for="edu in education"
+                :key="edu.id"
+                class="list-item"
+                density="compact"
+                :title="`${edu.degree.trim()}, ${edu.institution.trim()}`"
+              >
+                <template v-slot:append
+                  ><v-icon class="icon mr-4">mdi-pencil</v-icon
+                  ><v-icon class="icon">mdi-delete</v-icon></template
+                >
+                <template v-slot:prepend
+                  ><v-checkbox-btn></v-checkbox-btn
+                ></template>
               </v-list-item>
             </v-list>
           </div>
@@ -151,7 +164,6 @@
       <AwardsModal
         :showModal="awardsModalVisible"
         @close-modal="closeAwardsModal"
-        @award-added="addAward"
       />
     </div>
 
@@ -404,28 +416,12 @@ export default {
   transform: scale(1.2);
 }
 
-.checkbox {
-  margin-right: 8px;
-  margin-top: 1.3rem;
-}
-
-.skill-item {
-  display: flex;
-  align-items: center;
-}
-
-.delete-icon {
-  position: absolute;
-  right: 0.67rem;
-  bottom: 2.9rem;
-  font-size: 1.5rem;
-  background: none;
-  border: none;
-  cursor: pointer;
+.icon {
+  color: #000000;
   transition: transform 0.3s ease;
 }
 
-.delete-icon:hover {
+.icon:hover {
   transform: scale(1.2);
 }
 
@@ -489,7 +485,7 @@ button {
   padding: 1rem 0;
 }
 
-.skills-list {
+.list {
   width: 90%;
   margin-bottom: 1px;
   padding: 4px 16px;

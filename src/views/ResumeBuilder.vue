@@ -143,20 +143,16 @@
         @close-modal="closeProjectsModal"
       />
 
-      <!-- Other Resume Sections -->
-      <div class="section" v-for="section in sections" :key="section.name">
-        <h2>{{ section.name }}</h2>
-        <!-- Plus icon to open modal -->
-        <button class="plus-icon" @click="openModal(section.name)">+</button>
+      <!-- Awards Section -->
+      <div class="section">
+        <h2>Awards</h2>
+        <button class="plus-icon" @click="openAwardsModal">+</button>
       </div>
-
-      <!-- Modal for other sections -->
-      <div v-if="modalVisible" class="modal">
-        <div class="modal-content">
-          <span class="close-button" @click="closeModal">&times;</span>
-          <p>{{ activeSection }} Content Placeholder</p>
-        </div>
-      </div>
+      <AwardsModal
+        :showModal="awardsModalVisible"
+        @close-modal="closeAwardsModal"
+        @award-added="addAward"
+      />
     </div>
 
     <!-- Generate Resume Button -->
@@ -178,6 +174,7 @@ import Utils from '../config/utils'
 import SkillServices from '@/services/skillsServices'
 import EducationServices from '@/services/educationServices'
 import LinksModal from '../components/LinksModal.vue' //Importing the links Modal
+import AwardsModal from '@/components/AwardsModal.vue'
 
 export default {
   components: {
@@ -189,6 +186,7 @@ export default {
     ExperienceModal,
     LinksModal,
     InterestsModal,
+    AwardsModal,
   },
   created() {
     this.fetchSkills(), this.fetchEducation()
@@ -211,6 +209,7 @@ export default {
       experienceModalVisible: false,
       skillsExpanded: false,
       educationExpanded: false,
+      awardsModalVisible: false,
       activeSection: '',
     }
   },
@@ -299,6 +298,12 @@ export default {
     },
     closeExperienceModal() {
       this.experienceModalVisible = false
+    },
+    openAwardsModal() {
+      this.awardsModalVisible = true
+    },
+    closeAwardsModal() {
+      this.awardsModalVisible = false
     },
     toggleSkillsExpand() {
       this.skillsExpanded = !this.skillsExpanded

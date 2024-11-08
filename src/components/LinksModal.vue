@@ -4,11 +4,10 @@
       <v-card-title class="modal-title">Links</v-card-title>
       <v-card-text>
         <v-form>
-          <v-text-field 
-            label="Name" 
-            class="text-field">
+          <v-text-field v-model="type" label="Name" class="text-field">
           </v-text-field>
           <v-text-field
+            v-model="link"
             label="URL"
             class="text-field"
           ></v-text-field>
@@ -17,7 +16,7 @@
       <v-card-actions class="actions">
         <div class="button-container">
           <v-btn @click="closeModal" class="cancel-button" text>Cancel</v-btn>
-          <v-btn color="primary" @click="closeModal">Save</v-btn>
+          <v-btn color="primary" @click="saveLink">Save</v-btn>
         </div>
       </v-card-actions>
     </v-card>
@@ -25,6 +24,9 @@
 </template>
 
 <script>
+import LinkServices from '../services/linkServices'
+import Utils from '../config/utils.js'
+
 export default {
   name: 'LinksModal',
   props: {
@@ -32,18 +34,33 @@ export default {
   },
   data() {
     return {
-      
+      type: '',
+      link: '',
     }
   },
   methods: {
     closeModal() {
-      this.$emit('close-modal');
-    }
-  }
-
+      this.$emit('close-modal')
+    },
+    async saveLink() {
+      if (this.type.trim() && this.link.trim()) {
+        try {
+          const userId = Utils.getStore('user').userId
+          const linkData = {
+            type: this.type,
+            link: this.link,
+            userId,
+          }
+          await LinkServices.createLink(linkData)
+          this.closeModal() // Close the modal on success
+          this.$emit('link-added') // Emit an event to notify the parent component
+        } catch (error) {
+          console.error('Failed to add link:', error)
+        }
+      }
+    },
+  },
 }
-
-
 </script>
 
 <style scoped>

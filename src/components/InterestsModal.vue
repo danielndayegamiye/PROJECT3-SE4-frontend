@@ -4,11 +4,14 @@
       <v-card-title class="modal-title">Interests</v-card-title>
       <v-card-text>
         <v-form>
-          <v-text-field 
-            label="Name" 
-            class="text-field">
+          <v-text-field
+            v-model="careerPosition"
+            label="Name"
+            class="text-field"
+          >
           </v-text-field>
           <v-text-field
+            v-model="description"
             label="Description"
             class="text-field"
           ></v-text-field>
@@ -17,7 +20,7 @@
       <v-card-actions class="actions">
         <div class="button-container">
           <v-btn @click="closeModal" class="cancel-button" text>Cancel</v-btn>
-          <v-btn color="primary" @click="closeModal">Save</v-btn>
+          <v-btn color="primary" @click="saveInterest">Save</v-btn>
         </div>
       </v-card-actions>
     </v-card>
@@ -25,6 +28,9 @@
 </template>
 
 <script>
+import InterestServices from '../services/interestServices'
+import Utils from '../config/utils.js'
+
 export default {
   name: 'InterestsModal',
   props: {
@@ -32,18 +38,33 @@ export default {
   },
   data() {
     return {
-      
+      careerPosition: '',
+      description: '',
     }
   },
   methods: {
     closeModal() {
-      this.$emit('close-modal');
-    }
-  }
-
+      this.$emit('close-modal')
+    },
+    async saveInterest() {
+      if (this.careerPosition.trim() && this.description.trim()) {
+        try {
+          const userId = Utils.getStore('user').userId
+          const interestData = {
+            careerPosition: this.careerPosition,
+            description: this.description,
+            userId,
+          }
+          await InterestServices.createInterest(interestData)
+          this.closeModal() // Close the modal on success
+          this.$emit('interest-added') // Emit an event to notify the parent component
+        } catch (error) {
+          console.error('Failed to add interest:', error)
+        }
+      }
+    },
+  },
 }
-
-
 </script>
 
 <style scoped>

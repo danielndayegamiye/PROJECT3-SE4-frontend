@@ -111,10 +111,38 @@
         :showModal="educationModalVisible"
         @close-modal="closeEducationModal"
       />
+
       <!-- Interests Section -->
       <div class="section">
-        <h2>Interests</h2>
+        <h2 @click="toggleInterestsExpand">
+          Interests
+          <v-icon
+            :class="{ rotated: interestsExpanded }"
+            class="arrow-icon"
+            size="small"
+            >mdi-chevron-down</v-icon
+          >
+        </h2>
         <button class="plus-icon" @click="openInterestsModal">+</button>
+
+        <v-expand-transition>
+          <div v-show="interestsExpanded" class="expanded-content">
+            <v-list class="skills-list" dense>
+              <v-list-item
+                v-for="interest in interests"
+                :key="interest.id"
+                class="list-item"
+                density="compact"
+                append-icon="mdi-delete"
+                :title="interest.careerPosition"
+              >
+                <template v-slot:prepend
+                  ><v-checkbox-btn></v-checkbox-btn
+                ></template>
+              </v-list-item>
+            </v-list>
+          </div>
+        </v-expand-transition>
       </div>
 
       <InterestsModal
@@ -213,6 +241,7 @@ import Utils from '../config/utils'
 import SkillServices from '@/services/skillsServices'
 import EducationServices from '@/services/educationServices'
 import LinkServices from '@/services/linkServices'
+import InterestServices from '@/services/interestServices'
 import LinksModal from '../components/LinksModal.vue' //Importing the links Modal
 import AwardsModal from '@/components/AwardsModal.vue'
 
@@ -229,7 +258,10 @@ export default {
     AwardsModal,
   },
   created() {
-    this.fetchSkills(), this.fetchEducation(), this.fetchLink()
+    this.fetchSkills(),
+      this.fetchEducation(),
+      this.fetchLink(),
+      this.fetchInterest()
   },
 
   data() {
@@ -240,6 +272,7 @@ export default {
       skills: [],
       education: [],
       links: [],
+      interests: [],
       modalVisible: false,
       personalInfoModalVisible: false, // Modal visibility for personal info
       skillsModalVisible: false,
@@ -249,6 +282,7 @@ export default {
       projectsModalVisible: false,
       experienceModalVisible: false,
       skillsExpanded: false,
+      interestsExpanded: false,
       educationExpanded: false,
       linksExpanded: false,
       awardsModalVisible: false,
@@ -311,6 +345,21 @@ export default {
         console.error('Failed to fetch link:', error)
       }
     },
+    async fetchInterest() {
+      try {
+        const userId = Utils.getStore('user').userId // Retrieve userId from Utils
+        const response = await InterestServices.getInterestsByUserId(userId) // Fetch education from the server
+        this.interests = response.data.map(interest => ({
+          ...interest,
+          props: {
+            appendIcon: 'mdi-delete',
+          },
+        }))
+        console.log('Fetched Interest:', this.interests)
+      } catch (error) {
+        console.error('Failed to fetch interest:', error)
+      }
+    },
 
     // Methods for handling personal info modal
     openPersonalInfoModal() {
@@ -338,6 +387,7 @@ export default {
     },
     closeInterestsModal() {
       this.interestsModalVisible = false
+      this.fetchInterest()
     },
     openLinksModal() {
       this.linksModalVisible = true
@@ -372,6 +422,9 @@ export default {
     },
     toggleLinksExpand() {
       this.linksExpanded = !this.linksExpanded
+    },
+    toggleInterestsExpand() {
+      this.interestsExpanded = !this.interestsExpanded
     },
     // Empty method for generating resume
     generateResume() {

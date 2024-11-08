@@ -69,15 +69,35 @@
 
       <!-- Education Section -->
       <div class="section">
-        <h2>Education</h2>
+        <h2 @click="toggleEducationExpand">
+          Education
+          <v-icon
+            :class="{ rotated: educationExpanded }"
+            class="arrow-icon"
+            size="small"
+          >
+            mdi-chevron-down
+          </v-icon>
+        </h2>
         <button class="plus-icon" @click="openEducationModal">+</button>
+
+        <v-expand-transition>
+          <div v-show="educationExpanded" class="expanded-content">
+            <v-list dense>
+              <v-list-item v-for="edu in education" :key="edu.id">
+                <v-list-item-content>
+                  <v-list-item-title>{{ edu.institution }}</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </div>
+        </v-expand-transition>
       </div>
 
       <EducationModal
         :showModal="educationModalVisible"
         @close-modal="closeEducationModal"
-      ></EducationModal>
-
+      />
       <!-- Interests Section -->
       <div class="section">
         <h2>Interests</h2>
@@ -156,6 +176,7 @@ import ProjectsModal from '../components/ProjectsModal.vue' //Importing the proj
 import ExperienceModal from '@/components/ExperienceModal.vue' //Importing the Experience Modal
 import Utils from '../config/utils'
 import SkillServices from '@/services/skillsServices'
+import EducationServices from '@/services/educationServices'
 import LinksModal from '../components/LinksModal.vue' //Importing the links Modal
 
 export default {
@@ -170,8 +191,10 @@ export default {
     InterestsModal,
   },
   created() {
-    this.fetchSkills()
+    this.fetchSkills(),
+    this.fetchEducation()
   },
+ 
 
   data() {
     return {
@@ -179,6 +202,7 @@ export default {
         { name: 'Awards' }, // New section
       ],
       skills: [],
+      education:[],
       modalVisible: false,
       personalInfoModalVisible: false, // Modal visibility for personal info
       skillsModalVisible: false,
@@ -188,6 +212,7 @@ export default {
       projectsModalVisible: false,
       experienceModalVisible: false,
       skillsExpanded: false,
+      educationExpanded: false,
       activeSection: '',
     }
   },
@@ -216,6 +241,22 @@ export default {
         console.error('Failed to fetch skills:', error)
       }
     },
+    async fetchEducation() {
+      try {
+        const userId = Utils.getStore('user').userId; // Retrieve userId from Utils
+        const response = await EducationServices.getEducationByUserId(userId); // Fetch education from the server
+        this.education = response.data.map(edu => ({
+          ...edu,
+          props: {
+            appendIcon: 'mdi-delete',
+          },
+        }));
+        console.log('Fetched Education:', this.education);
+      } catch (error) {
+        console.error('Failed to fetch education:', error);
+      }
+    },
+
     // Methods for handling personal info modal
     openPersonalInfoModal() {
       this.personalInfoModalVisible = true
@@ -262,6 +303,9 @@ export default {
     },
     toggleSkillsExpand() {
       this.skillsExpanded = !this.skillsExpanded
+    },
+    toggleEducationExpand() {
+      this.educationExpanded = !this.educationExpanded;
     },
     // Empty method for generating resume
     generateResume() {

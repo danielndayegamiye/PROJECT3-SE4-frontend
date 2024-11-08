@@ -18,11 +18,8 @@
       <!-- Personal Info Section -->
       <div class="section">
         <h2>Personal Info</h2>
-        <!-- Plus icon to open personal info modal -->
         <button class="plus-icon" @click="openPersonalInfoModal">+</button>
       </div>
-
-      <!-- Modal for Personal Info -->
       <PersonalInfoModal
         :showModal="personalInfoModalVisible"
         @close-modal="closePersonalInfoModal"
@@ -40,28 +37,18 @@
           >
         </h2>
         <button class="plus-icon" @click="openSkillsModal">+</button>
-
         <v-expand-transition>
           <div v-show="skillsExpanded" class="expanded-content">
-            <v-list class="skills-list" dense>
-              <v-list-item
-                v-for="skill in skills"
-                :key="skill.id"
-                class="list-item"
-                density="compact"
-                append-icon="mdi-delete"
-                :title="skill.name"
-              >
-                <template v-slot:prepend
-                  ><v-checkbox-btn></v-checkbox-btn
-                ></template>
+            <v-list dense>
+              <v-list-item v-for="skill in skills" :key="skill.id">
+                <v-list-item-content>
+                  <v-list-item-title>{{ skill.name }}</v-list-item-title>
+                </v-list-item-content>
               </v-list-item>
             </v-list>
           </div>
         </v-expand-transition>
       </div>
-
-      <!-- Modal for Skills -->
       <SkillsModal
         :showModal="skillsModalVisible"
         @close-modal="closeSkillsModal"
@@ -69,94 +56,64 @@
 
       <!-- Education Section -->
       <div class="section">
-        <h2 @click="toggleEducationExpand">
-          Education
-          <v-icon
-            :class="{ rotated: educationExpanded }"
-            class="arrow-icon"
-            size="small"
-          >
-            mdi-chevron-down
-          </v-icon>
-        </h2>
+        <h2>Education</h2>
         <button class="plus-icon" @click="openEducationModal">+</button>
-
-        <v-expand-transition>
-          <div v-show="educationExpanded" class="expanded-content">
-            <v-list dense>
-              <v-list-item v-for="edu in education" :key="edu.id">
-                <v-list-item-content>
-                  <v-list-item-title>{{ edu.institution }}</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-          </div>
-        </v-expand-transition>
       </div>
-
       <EducationModal
         :showModal="educationModalVisible"
         @close-modal="closeEducationModal"
       />
+
       <!-- Interests Section -->
       <div class="section">
         <h2>Interests</h2>
         <button class="plus-icon" @click="openInterestsModal">+</button>
       </div>
-
       <InterestsModal
         :showModal="interestsModalVisible"
         @close-modal="closeInterestsModal"
-      ></InterestsModal>
+      />
 
       <!-- Links Section -->
       <div class="section">
         <h2>Links</h2>
         <button class="plus-icon" @click="openLinksModal">+</button>
       </div>
-
       <LinksModal
         :showModal="linksModalVisible"
         @close-modal="closeLinksModal"
-      ></LinksModal>
+      />
 
       <!-- Experience Section -->
       <div class="section">
         <h2>Experience</h2>
         <button class="plus-icon" @click="openExperienceModal">+</button>
       </div>
-
-      <!-- Modal for Experience -->
       <ExperienceModal
         :show-modal="experienceModalVisible"
         @close-modal="closeExperienceModal"
-      ></ExperienceModal>
+      />
 
       <!-- Projects Section -->
       <div class="section">
         <h2>Projects</h2>
         <button class="plus-icon" @click="openProjectsModal">+</button>
       </div>
-
       <ProjectsModal
         :showModal="projectsModalVisible"
         @close-modal="closeProjectsModal"
       />
 
-      <!-- Other Resume Sections -->
-      <div class="section" v-for="section in sections" :key="section.name">
-        <h2>{{ section.name }}</h2>
-        <!-- Plus icon to open modal -->
-        <button class="plus-icon" @click="openModal(section.name)">+</button>
+      <!-- Awards Section -->
+      <div class="section">
+        <h2>Awards</h2>
+        <button class="plus-icon" @click="openAwardsModal">+</button>
       </div>
-
-      <!-- Modal for other sections -->
-      <div v-if="modalVisible" class="modal">
-        <div class="modal-content">
-          <span class="close-button" @click="closeModal">&times;</span>
-          <p>{{ activeSection }} Content Placeholder</p>
-        </div>
-      </div>
+      <AwardsModal
+        :showModal="awardsModalVisible"
+        @close-modal="closeAwardsModal"
+        @award-added="addAward"
+      />
     </div>
 
     <!-- Generate Resume Button -->
@@ -168,94 +125,43 @@
 
 <script>
 import NavBar from '../components/nav.vue'
-import PersonalInfoModal from '../components/PersonalInfo.vue' // Importing the Personal Info modal
-import SkillsModal from '../components/SkillsModal.vue' //Importing the Skills Modal
-import EducationModal from '../components/educationModal.vue' //Importing the education Modal
-import InterestsModal from '../components/InterestsModal.vue' //Importing the interests Modal
-import ProjectsModal from '../components/ProjectsModal.vue' //Importing the projects Modal
-import ExperienceModal from '@/components/ExperienceModal.vue' //Importing the Experience Modal
-import Utils from '../config/utils'
-import SkillServices from '@/services/skillsServices'
-import EducationServices from '@/services/educationServices'
-import LinksModal from '../components/LinksModal.vue' //Importing the links Modal
+import PersonalInfoModal from '../components/PersonalInfo.vue'
+import SkillsModal from '../components/SkillsModal.vue'
+import EducationModal from '../components/educationModal.vue'
+import InterestsModal from '../components/InterestsModal.vue'
+import ProjectsModal from '../components/ProjectsModal.vue'
+import ExperienceModal from '@/components/ExperienceModal.vue'
+import LinksModal from '../components/LinksModal.vue'
+import AwardsModal from '../components/AwardsModal.vue' // Import AwardsModal
 
 export default {
   components: {
     NavBar,
-    PersonalInfoModal, // Register PersonalInfoModal component
-    SkillsModal, //Register SkillsModal component
-    EducationModal, //Register EducationModal component
-    ProjectsModal, //Register ProjectsModal component
+    PersonalInfoModal,
+    SkillsModal,
+    EducationModal,
+    ProjectsModal,
     ExperienceModal,
     LinksModal,
     InterestsModal,
+    AwardsModal, // Register AwardsModal
   },
-  created() {
-    this.fetchSkills(), this.fetchEducation()
-  },
-
   data() {
     return {
-      sections: [
-        { name: 'Awards' }, // New section
-      ],
       skills: [],
-      education: [],
-      modalVisible: false,
-      personalInfoModalVisible: false, // Modal visibility for personal info
+      personalInfoModalVisible: false,
       skillsModalVisible: false,
       educationModalVisible: false,
       interestsModalVisible: false,
       linksModalVisible: false,
       projectsModalVisible: false,
       experienceModalVisible: false,
+      awardsModalVisible: false, // Visibility for Awards modal
       skillsExpanded: false,
-      educationExpanded: false,
-      activeSection: '',
+      awards: [], // List to store awards
     }
   },
   methods: {
-    // Method to open modal for regular sections
-    openModal(sectionName) {
-      this.activeSection = sectionName
-      this.modalVisible = true
-    },
-    closeModal() {
-      this.modalVisible = false
-      this.activeSection = ''
-    },
-    async fetchSkills() {
-      try {
-        const userId = Utils.getStore('user').userId // Retrieve userId from Utils
-        const response = await SkillServices.getSkillsByUserId(userId) // Fetch skills from the server
-        this.skills = response.data.map(skill => ({
-          ...skill,
-          props: {
-            appendIcon: 'mdi-delete',
-          },
-        }))
-        console.log('Here: ' + this.skills)
-      } catch (error) {
-        console.error('Failed to fetch skills:', error)
-      }
-    },
-    async fetchEducation() {
-      try {
-        const userId = Utils.getStore('user').userId // Retrieve userId from Utils
-        const response = await EducationServices.getEducationByUserId(userId) // Fetch education from the server
-        this.education = response.data.map(edu => ({
-          ...edu,
-          props: {
-            appendIcon: 'mdi-delete',
-          },
-        }))
-        console.log('Fetched Education:', this.education)
-      } catch (error) {
-        console.error('Failed to fetch education:', error)
-      }
-    },
-
-    // Methods for handling personal info modal
     openPersonalInfoModal() {
       this.personalInfoModalVisible = true
     },
@@ -267,14 +173,12 @@ export default {
     },
     closeSkillsModal() {
       this.skillsModalVisible = false
-      this.fetchSkills()
     },
     openEducationModal() {
       this.educationModalVisible = true
     },
     closeEducationModal() {
       this.educationModalVisible = false
-      this.fetchEducation()
     },
     openInterestsModal() {
       this.interestsModalVisible = true
@@ -300,11 +204,18 @@ export default {
     closeExperienceModal() {
       this.experienceModalVisible = false
     },
+    openAwardsModal() {
+      this.awardsModalVisible = true
+    },
+    closeAwardsModal() {
+      this.awardsModalVisible = false
+    },
+    addAward(award) {
+      console.log('Award added:', award) // Handle adding the award
+      this.awards.push(award) // Add the award to the awards list
+    },
     toggleSkillsExpand() {
       this.skillsExpanded = !this.skillsExpanded
-    },
-    toggleEducationExpand() {
-      this.educationExpanded = !this.educationExpanded
     },
     // Empty method for generating resume
     generateResume() {
@@ -396,117 +307,20 @@ export default {
 }
 
 .arrow-icon:hover {
-  transform: scale(1.2);
+  transform: rotate(180deg); /* Rotate arrow on hover */
 }
 
-.checkbox {
-  margin-right: 8px;
-  margin-top: 1.3rem;
-}
-
-.skill-item {
-  display: flex;
-  align-items: center;
-}
-
-.delete-icon {
-  position: absolute;
-  right: 0.67rem;
-  bottom: 2.9rem;
-  font-size: 1.5rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.delete-icon:hover {
-  transform: scale(1.2);
-}
-
-/* Modal overlay styling */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Modal content box styling */
-.modal-content {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  width: 400px;
-  text-align: center;
-  position: relative;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Box shadow for better appearance */
-}
-
-/* Close button styling */
-.close-button {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-/* Styling for the Generate Resume button */
+/* Button container for generate resume button */
 .generate-resume {
   display: flex;
   justify-content: center;
-  margin-top: 3rem;
+  padding: 1rem;
 }
 
-/* Additional styling to make the layout look more polished */
-h2 {
-  font-size: 1.4rem;
-  color: #333;
-  margin-bottom: 0.5rem;
-}
-
-button {
-  cursor: pointer;
-}
-
-.rotated {
-  transform: rotate(180deg);
-  transition: transform 0.3s ease;
-}
-
-.expanded-content {
-  padding: 1rem 0;
-}
-
-.skills-list {
-  width: 90%;
-  margin-bottom: 1px;
-  padding: 4px 16px;
-}
-
-.list-item {
-  padding: 4px 16px;
-  margin-bottom: 1px;
-}
-
-@media (max-width: 768px) {
-  /* Responsive design adjustments for smaller screens */
-  .resume-sections {
-    padding: 1rem;
-  }
-
-  .section {
-    padding: 1rem;
-  }
-
-  .modal-content {
-    width: 90%;
-  }
+.generate-resume .v-btn {
+  background-color: #82152b;
+  color: white;
+  font-size: 1.2rem;
+  padding: 0.8rem 1.5rem;
 }
 </style>

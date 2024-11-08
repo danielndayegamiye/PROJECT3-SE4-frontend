@@ -1,29 +1,41 @@
 <template>
   <div v-if="showModal" class="modal-overlay">
     <v-card class="modal-card" elevation="3">
-      <v-card-title class="modal-title">Education</v-card-title>
+      <v-card-title class="modal-title">Award Information</v-card-title>
       <v-card-text>
         <v-form>
-          <v-text-field 
-            label="Institution" 
-            class="text-field">
-          </v-text-field>
+          <!-- Title input -->
           <v-text-field
-            label="Degree or Study"
+            label="Title"
+            outlined
             class="text-field"
+            v-model="award.title"
+            required
           ></v-text-field>
+
+          <!-- Description input (now a v-text-field for consistency) -->
           <v-text-field
-            label="Graduation date"
+            label="Description"
+            outlined
             class="text-field"
+            v-model="award.description"
+            required
           ></v-text-field>
-          <v-text-field label="GPA" class="text-field"></v-text-field>
-          <v-text-field label="Relevant Work" class="text-field"></v-text-field>
+
+          <!-- Year input (removed number-specific input and dropdown) -->
+          <v-text-field
+            label="Year"
+            outlined
+            class="text-field"
+            v-model="award.year"
+            required
+          ></v-text-field>
         </v-form>
       </v-card-text>
       <v-card-actions class="actions">
         <div class="button-container">
           <v-btn @click="closeModal" class="cancel-button" text>Cancel</v-btn>
-          <v-btn color="primary" @click="closeModal">Save</v-btn>
+          <v-btn color="primary" @click="saveAward">Save</v-btn>
         </div>
       </v-card-actions>
     </v-card>
@@ -32,24 +44,33 @@
 
 <script>
 export default {
-  name: 'EducationModal',
+  name: 'AwardsModal',
   props: {
     showModal: Boolean,
   },
   data() {
     return {
-      
+      award: {
+        title: '',
+        description: '',
+        year: '',
+      },
     }
   },
   methods: {
     closeModal() {
-      this.$emit('close-modal');
-    }
-  }
-
+      this.$emit('close-modal')
+    },
+    saveAward() {
+      this.$emit('award-added', { ...this.award })
+      this.closeModal()
+      this.resetForm()
+    },
+    resetForm() {
+      this.award = { title: '', description: '', year: '' }
+    },
+  },
 }
-
-
 </script>
 
 <style scoped>

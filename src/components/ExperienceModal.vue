@@ -5,31 +5,37 @@
       <v-card-text class="modal-content">
         <v-form>
           <v-text-field
+            v-model="job_title"
             label="Job Title (Role)"
             outlined
             class="text-field"
           ></v-text-field>
           <v-text-field
+            v-model="company_name"
             label="Company Name"
             outlined
             class="text-field"
           ></v-text-field>
           <v-text-field
+            v-model="location"
             label="Location (City, State)"
             outlined
             class="text-field"
           ></v-text-field>
           <v-text-field
+            v-model="start_date"
             label="Start Date"
             outlined
             class="text-field"
           ></v-text-field>
           <v-text-field
+            v-model="end_date"
             label="End Date or Current"
             outlined
             class="text-field"
           ></v-text-field>
           <v-textarea
+            v-model="responsibilities"
             label="Responsibilities/Accomplishments"
             outlined
             rows="3"
@@ -40,7 +46,7 @@
       <v-card-actions class="actions">
         <div class="button-container">
           <v-btn @click="closeModal" class="cancel-button" text>Cancel</v-btn>
-          <v-btn color="primary" @click="closeModal">Save</v-btn>
+          <v-btn color="primary" @click="saveExperience">Save</v-btn>
         </div>
       </v-card-actions>
     </v-card>
@@ -48,14 +54,56 @@
 </template>
 
 <script>
+import ExperienceServices from '@/services/experienceServices'
+import Utils from '@/config/utils'
+
 export default {
   name: 'ExperienceModal',
   props: {
     showModal: Boolean,
   },
+  data() {
+    return {
+      job_title: '',
+      company_name: '',
+      location: '',
+      responsibilities: '',
+      start_date: '',
+      end_date: '',
+    }
+  },
   methods: {
     closeModal() {
       this.$emit('close-modal')
+    },
+    async saveExperience() {
+      if (
+        this.job_title &&
+        this.company_name &&
+        this.location &&
+        this.responsibilities &&
+        this.start_date &&
+        this.end_date
+      ) {
+        try {
+          const userId = Utils.getStore('user').userId
+          const experienceData = {
+            job_title: this.job_title,
+            company_name: this.company_name,
+            location: this.location,
+            responsibilities: this.responsibilities,
+            start_date: this.start_date,
+            end_date: this.end_date,
+            userId,
+          }
+
+          await ExperienceServices.createExperience(experienceData)
+          this.closeModal() // Close the modal on success
+          this.$emit('experience-added') // Emit an event to notify the parent component
+        } catch (error) {
+          console.error('Failed to add experience:', error)
+        }
+      }
     },
   },
 }

@@ -166,9 +166,12 @@
                 :key="interest.id"
                 class="list-item"
                 density="compact"
-                append-icon="mdi-delete"
                 :title="interest.careerPosition"
               >
+                <template v-slot:append
+                  ><v-icon class="icon mr-4">mdi-pencil</v-icon
+                  ><v-icon class="icon">mdi-delete</v-icon></template
+                >
                 <template v-slot:prepend
                   ><v-checkbox-btn></v-checkbox-btn
                 ></template>
@@ -204,9 +207,12 @@
                 :key="link.id"
                 class="list-item"
                 density="compact"
-                append-icon="mdi-delete"
                 :title="link.type"
               >
+                <template v-slot:append
+                  ><v-icon class="icon mr-4">mdi-pencil</v-icon
+                  ><v-icon class="icon">mdi-delete</v-icon></template
+                >
                 <template v-slot:prepend
                   ><v-checkbox-btn></v-checkbox-btn
                 ></template>

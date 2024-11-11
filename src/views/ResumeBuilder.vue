@@ -235,14 +235,46 @@
 
       <!-- Projects Section -->
       <div class="section">
-        <h2>Projects</h2>
+        <h2 @click="toggleProjectsExpand">
+          Projects
+          <v-icon
+            :class="{ rotated: projectsExpanded }"
+            class="arrow-icon"
+            size="small"
+          >
+            mdi-chevron-down
+          </v-icon>
+        </h2>
         <button class="plus-icon" @click="openProjectsModal">+</button>
+
+        <v-expand-transition>
+          <div v-show="projectsExpanded" class="expanded-content">
+            <v-list class="list" dense>
+              <v-list-item
+                v-for="project in projects"
+                :key="project.id"
+                class="list-item"
+                density="compact"
+                :title="project.project_name.trim()"
+              >
+                <template v-slot:append
+                  ><v-icon class="icon mr-4">mdi-pencil</v-icon
+                  ><v-icon class="icon">mdi-delete</v-icon></template
+                >
+                <template v-slot:prepend
+                  ><v-checkbox-btn></v-checkbox-btn
+                ></template>
+              </v-list-item>
+            </v-list>
+          </div>
+        </v-expand-transition>
       </div>
 
       <ProjectsModal
         :showModal="projectsModalVisible"
         @close-modal="closeProjectsModal"
       />
+
 
       <!-- Awards Section -->
       <div class="section">
@@ -274,6 +306,7 @@ import Utils from '../config/utils'
 import SkillServices from '@/services/skillsServices'
 import EducationServices from '@/services/educationServices'
 import LinkServices from '@/services/linkServices'
+import ProjectsServices from '@/services/projectsServices'
 import InterestServices from '@/services/interestServices'
 import PersonalInfoServices from '@/services/personalInfoServices'
 import LinksModal from '../components/LinksModal.vue' //Importing the links Modal
@@ -296,7 +329,8 @@ export default {
       this.fetchEducation(),
       this.fetchLink(),
       this.fetchInterest(),
-      this.fetchPersonalInfos()
+      this.fetchPersonalInfos(),
+      this.fetchProjects()
   },
 
   data() {
@@ -306,6 +340,7 @@ export default {
       links: [],
       interests: [],
       personalInfos: [],
+      projects: [],
       modalVisible: false,
       personalInfoModalVisible: false, // Modal visibility for personal info
       skillsModalVisible: false,
@@ -320,6 +355,7 @@ export default {
       educationExpanded: false,
       linksExpanded: false,
       personalInfoExpanded: false,
+      projectsExpanded: false,
       activeSection: '',
     }
   },
@@ -363,6 +399,22 @@ export default {
         console.error('Failed to fetch education:', error)
       }
     },
+    async fetchProjects() {
+      try {
+        const userId = Utils.getStore('user').userId; // Retrieve userId from Utils
+        const response = await ProjectsServices.getProjectsByUserId(userId); // Fetch projects from the server
+        this.projects = response.data.map(project => ({
+          ...project,
+          props: {
+            appendIcon: 'mdi-delete',
+          },
+        }));
+        console.log('Fetched Projects:', this.projects);
+      } catch (error) {
+        console.error('Failed to fetch projects:', error);
+      }
+    },
+
     async fetchLink() {
       try {
         const userId = Utils.getStore('user').userId // Retrieve userId from Utils
@@ -484,6 +536,9 @@ export default {
     },
     toggleInterestsExpand() {
       this.interestsExpanded = !this.interestsExpanded
+    },
+    toggleProjectsExpand() {
+      this.projectsExpanded = !this.projectsExpanded
     },
     togglePersonalInfoExpand() {
       this.personalInfoExpanded = !this.personalInfoExpanded

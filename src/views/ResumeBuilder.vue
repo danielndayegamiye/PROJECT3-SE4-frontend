@@ -42,7 +42,13 @@
                   ><v-icon class="icon mr-4">mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
-                    @click="deletePersonalInfo(personalInfo.id)"
+                    @click="
+                      openDeleteModal(
+                        personalInfo.id,
+                        `${personalInfo.first_name.trim()} ${personalInfo.last_name.trim()}, ${personalInfo.email.trim()}, ${personalInfo.phone_number.trim()}`,
+                        'Personal Info',
+                      )
+                    "
                     >mdi-delete</v-icon
                   ></template
                 >
@@ -86,7 +92,13 @@
               >
                 <template v-slot:append
                   ><v-icon class="icon mr-4">mdi-pencil</v-icon
-                  ><v-icon class="icon">mdi-delete</v-icon></template
+                  ><v-icon
+                    class="icon"
+                    @click="
+                      openDeleteModal(skill.id, `${skill.name.trim()}`, 'Skill')
+                    "
+                    >mdi-delete</v-icon
+                  ></template
                 >
                 <template v-slot:prepend
                   ><v-checkbox-btn></v-checkbox-btn
@@ -129,7 +141,17 @@
               >
                 <template v-slot:append
                   ><v-icon class="icon mr-4">mdi-pencil</v-icon
-                  ><v-icon class="icon">mdi-delete</v-icon></template
+                  ><v-icon
+                    class="icon"
+                    @click="
+                      openDeleteModal(
+                        edu.id,
+                        `${edu.degree.trim()}, ${edu.institution.trim()}`,
+                        'Education',
+                      )
+                    "
+                    >mdi-delete</v-icon
+                  ></template
                 >
                 <template v-slot:prepend
                   ><v-checkbox-btn></v-checkbox-btn
@@ -160,7 +182,7 @@
 
         <v-expand-transition>
           <div v-show="interestsExpanded" class="expanded-content">
-            <v-list class="skills-list" dense>
+            <v-list class="list" dense>
               <v-list-item
                 v-for="interest in interests"
                 :key="interest.id"
@@ -170,7 +192,17 @@
               >
                 <template v-slot:append
                   ><v-icon class="icon mr-4">mdi-pencil</v-icon
-                  ><v-icon class="icon">mdi-delete</v-icon></template
+                  ><v-icon
+                    class="icon"
+                    @click="
+                      openDeleteModal(
+                        interest.id,
+                        `${interest.careerPosition.trim()}`,
+                        'Interest',
+                      )
+                    "
+                    >mdi-delete</v-icon
+                  ></template
                 >
                 <template v-slot:prepend
                   ><v-checkbox-btn></v-checkbox-btn
@@ -211,7 +243,13 @@
               >
                 <template v-slot:append
                   ><v-icon class="icon mr-4">mdi-pencil</v-icon
-                  ><v-icon class="icon">mdi-delete</v-icon></template
+                  ><v-icon
+                    class="icon"
+                    @click="
+                      openDeleteModal(link.id, `${link.type.trim()}`, 'Link')
+                    "
+                    >mdi-delete</v-icon
+                  ></template
                 >
                 <template v-slot:prepend
                   ><v-checkbox-btn></v-checkbox-btn
@@ -252,7 +290,15 @@
               >
                 <template v-slot:append
                   ><v-icon class="icon mr-4">mdi-pencil</v-icon
-                  ><v-icon class="icon" @click="deleteExperience(experience.id)"
+                  ><v-icon
+                    class="icon"
+                    @click="
+                      openDeleteModal(
+                        experience.id,
+                        `${experience.job_title.trim()}, ${experience.company_name.trim()}, ${experience.start_date.trim()} - ${experience.end_date.trim()}`,
+                        'Experience',
+                      )
+                    "
                     >mdi-delete</v-icon
                   ></template
                 >
@@ -298,6 +344,15 @@
       <v-btn color="primary" @click="generateResume">Generate Resume</v-btn>
     </div>
   </div>
+
+  <DeleteConfirm
+    :showModal="deleteModalVisible"
+    :itemId="itemToDeleteId"
+    :itemName="itemToDeleteName"
+    :deleteService="deleteService"
+    @close-modal="closeDeleteModal"
+    @confirm-delete="deleteItem"
+  />
 </template>
 
 <script>
@@ -317,6 +372,7 @@ import PersonalInfoServices from '@/services/personalInfoServices'
 import LinksModal from '../components/LinksModal.vue' //Importing the links Modal
 import AwardsModal from '@/components/AwardsModal.vue'
 import ExperienceServices from '@/services/experienceServices'
+import DeleteConfirm from '@/components/DeleteConfirm.vue'
 
 export default {
   components: {
@@ -329,6 +385,7 @@ export default {
     LinksModal,
     InterestsModal,
     AwardsModal,
+    DeleteConfirm,
   },
   created() {
     this.fetchSkills(),
@@ -356,12 +413,16 @@ export default {
       projectsModalVisible: false,
       experienceModalVisible: false,
       awardsModalVisible: false,
+      deleteModalVisible: false,
       skillsExpanded: false,
       interestsExpanded: false,
       educationExpanded: false,
       linksExpanded: false,
       personalInfoExpanded: false,
       experienceExpanded: false,
+      itemToDeleteId: null,
+      itemToDeleteName: '',
+      deleteService: '',
       activeSection: '',
     }
   },
@@ -487,6 +548,72 @@ export default {
         console.error('Failed to delete experience:', error)
       }
     },
+    async deleteSkill(skillId) {
+      try {
+        await SkillServices.deleteSkill(skillId)
+        this.fetchSkills()
+        console.log(`Skill with id ${skillId} deleted successfully.`)
+      } catch (error) {
+        console.error('Failed to delete skill:', error)
+      }
+    },
+    async deleteEducation(educationId) {
+      try {
+        await EducationServices.deleteEducation(educationId)
+        this.fetchEducation()
+        console.log(`Education with id ${educationId} deleted successfully.`)
+      } catch (error) {
+        console.error('Failed to delete education:', error)
+      }
+    },
+    async deleteInterest(interestId) {
+      try {
+        await InterestServices.deleteInterest(interestId)
+        this.fetchInterest()
+        console.log(`Interest with id ${interestId} deleted successfully.`)
+      } catch (error) {
+        console.error('Failed to delete interest:', error)
+      }
+    },
+    async deleteLink(linkId) {
+      try {
+        await LinkServices.deleteLink(linkId)
+        this.fetchLink()
+        console.log(`Link with id ${linkId} deleted successfully.`)
+      } catch (error) {
+        console.error('Failed to delete link:', error)
+      }
+    },
+    deleteItem(itemId, deleteService) {
+      switch (deleteService) {
+        case 'Personal Info':
+          this.deletePersonalInfo(itemId)
+          break
+        case 'Skill':
+          this.deleteSkill(itemId)
+          break
+        case 'Education':
+          this.deleteEducation(itemId)
+          break
+        case 'Interest':
+          this.deleteInterest(itemId)
+          break
+        case 'Link':
+          this.deleteLink(itemId)
+          break
+        case 'Experience':
+          this.deleteExperience(itemId)
+          break
+        case 'Project':
+          break
+        case 'Award':
+          break
+        default:
+          break
+      }
+
+      this.closeDeleteModal()
+    },
     // Methods for handling personal info modal
     openPersonalInfoModal() {
       this.personalInfoModalVisible = true
@@ -541,6 +668,18 @@ export default {
     },
     closeAwardsModal() {
       this.awardsModalVisible = false
+    },
+    openDeleteModal(itemId, itemName, deleteService) {
+      this.itemToDeleteId = itemId
+      this.itemToDeleteName = itemName
+      this.deleteService = deleteService
+      this.deleteModalVisible = true
+    },
+    closeDeleteModal() {
+      this.deleteModalVisible = false
+      this.itemToDeleteId = null
+      this.itemToDeleteName = ''
+      this.deleteService = ''
     },
     toggleSkillsExpand() {
       this.skillsExpanded = !this.skillsExpanded

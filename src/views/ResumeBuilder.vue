@@ -17,9 +17,42 @@
     <div class="resume-sections">
       <!-- Personal Info Section -->
       <div class="section">
-        <h2>Personal Info</h2>
-        <!-- Plus icon to open personal info modal -->
+        <h2 @click="togglePersonalInfoExpand">
+          Personal Info
+          <v-icon
+            :class="{ rotated: personalInfoExpanded }"
+            class="arrow-icon"
+            size="small"
+            >mdi-chevron-down</v-icon
+          >
+        </h2>
         <button class="plus-icon" @click="openPersonalInfoModal">+</button>
+
+        <v-expand-transition>
+          <div v-show="personalInfoExpanded" class="expanded-content">
+            <v-list class="list" dense>
+              <v-list-item
+                v-for="personalInfo in personalInfos"
+                :key="personalInfo.id"
+                class="list-item"
+                density="compact"
+                :title="`${personalInfo.first_name.trim()} ${personalInfo.last_name.trim()}, ${personalInfo.email.trim()}, ${personalInfo.phone_number.trim()}`"
+              >
+                <template v-slot:append
+                  ><v-icon class="icon mr-4">mdi-pencil</v-icon
+                  ><v-icon
+                    class="icon"
+                    @click="deletePersonalInfo(personalInfo.id)"
+                    >mdi-delete</v-icon
+                  ></template
+                >
+                <template v-slot:prepend
+                  ><v-checkbox-btn></v-checkbox-btn
+                ></template>
+              </v-list-item>
+            </v-list>
+          </div>
+        </v-expand-transition>
       </div>
 
       <!-- Modal for Personal Info -->
@@ -165,7 +198,7 @@
 
         <v-expand-transition>
           <div v-show="linksExpanded" class="expanded-content">
-            <v-list class="skills-list" dense>
+            <v-list class="list" dense>
               <v-list-item
                 v-for="link in links"
                 :key="link.id"
@@ -242,6 +275,7 @@ import SkillServices from '@/services/skillsServices'
 import EducationServices from '@/services/educationServices'
 import LinkServices from '@/services/linkServices'
 import InterestServices from '@/services/interestServices'
+import PersonalInfoServices from '@/services/personalInfoServices'
 import LinksModal from '../components/LinksModal.vue' //Importing the links Modal
 import AwardsModal from '@/components/AwardsModal.vue'
 
@@ -261,18 +295,17 @@ export default {
     this.fetchSkills(),
       this.fetchEducation(),
       this.fetchLink(),
-      this.fetchInterest()
+      this.fetchInterest(),
+      this.fetchPersonalInfos()
   },
 
   data() {
     return {
-      sections: [
-        { name: 'Awards' }, // New section
-      ],
       skills: [],
       education: [],
       links: [],
       interests: [],
+      personalInfos: [],
       modalVisible: false,
       personalInfoModalVisible: false, // Modal visibility for personal info
       skillsModalVisible: false,
@@ -281,11 +314,12 @@ export default {
       linksModalVisible: false,
       projectsModalVisible: false,
       experienceModalVisible: false,
+      awardsModalVisible: false,
       skillsExpanded: false,
       interestsExpanded: false,
       educationExpanded: false,
       linksExpanded: false,
-      awardsModalVisible: false,
+      personalInfoExpanded: false,
       activeSection: '',
     }
   },
@@ -360,13 +394,38 @@ export default {
         console.error('Failed to fetch interest:', error)
       }
     },
-
+    async fetchPersonalInfos() {
+      try {
+        const userId = Utils.getStore('user').userId // Retrieve userId from Utils
+        const response =
+          await PersonalInfoServices.getPersonalInfoByUserId(userId)
+        this.personalInfos = response.data.map(personalInfo => ({
+          ...personalInfo,
+          props: {
+            appendIcon: 'mdi-delete',
+          },
+        }))
+        console.log('Fetched Personal Info:', this.personalInfos)
+      } catch (error) {
+        console.error('Failed to fetch personal info:', error)
+      }
+    },
+    async deletePersonalInfo(personalInfoId) {
+      try {
+        await PersonalInfoServices.deletePersonalInfo(personalInfoId)
+        this.fetchPersonalInfos()
+        console.log(`Skill with id ${personalInfoId} deleted successfully.`)
+      } catch (error) {
+        console.error('Failed to delete skill:', error)
+      }
+    },
     // Methods for handling personal info modal
     openPersonalInfoModal() {
       this.personalInfoModalVisible = true
     },
     closePersonalInfoModal() {
       this.personalInfoModalVisible = false
+      this.fetchPersonalInfos()
     },
     openSkillsModal() {
       this.skillsModalVisible = true
@@ -425,6 +484,9 @@ export default {
     },
     toggleInterestsExpand() {
       this.interestsExpanded = !this.interestsExpanded
+    },
+    togglePersonalInfoExpand() {
+      this.personalInfoExpanded = !this.personalInfoExpanded
     },
     // Empty method for generating resume
     generateResume() {

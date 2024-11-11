@@ -5,28 +5,33 @@
       <v-card-text>
         <v-form>
           <v-text-field
+            v-model="first_name"
             label="First Name"
             outlined
             class="text-field"
           ></v-text-field>
           <v-text-field
+            v-model="last_name"
             label="Last Name"
             outlined
             class="text-field"
           ></v-text-field>
           <v-text-field
+            v-model="email"
             label="Email"
             outlined
             type="email"
             class="text-field"
           ></v-text-field>
           <v-text-field
+            v-model="phone_number"
             label="Phone Number"
             outlined
             type="tel"
             class="text-field"
           ></v-text-field>
           <v-text-field
+            v-model="address"
             label="Address(Optional)"
             outlined
             class="text-field"
@@ -36,7 +41,7 @@
       <v-card-actions class="actions">
         <div class="button-container">
           <v-btn @click="closeModal" class="cancel-button" text>Cancel</v-btn>
-          <v-btn color="primary" @click="closeModal">Save</v-btn>
+          <v-btn color="primary" @click="savePersonalInfo">Save</v-btn>
         </div>
       </v-card-actions>
     </v-card>
@@ -44,14 +49,60 @@
 </template>
 
 <script>
+import PersonalInfoServices from '../services/personalInfoServices'
+import Utils from '../config/utils'
+
 export default {
   name: 'PersonalInfoModal',
   props: {
     showModal: Boolean,
   },
+  data() {
+    return {
+      first_name: '',
+      last_name: '',
+      email: '',
+      phone_number: '',
+      address: '',
+    }
+  },
   methods: {
     closeModal() {
       this.$emit('close-modal')
+      this.resetFields()
+    },
+    resetFields() {
+      this.first_name = ''
+      this.last_name = ''
+      this.email = ''
+      this.phone_number = ''
+      this.address = ''
+    },
+    async savePersonalInfo() {
+      if (
+        this.first_name.trim() &&
+        this.last_name.trim() &&
+        this.phone_number.trim() &&
+        this.address.trim() &&
+        this.email.trim()
+      ) {
+        try {
+          const userId = Utils.getStore('user').userId
+          const personalInfoData = {
+            first_name: this.first_name,
+            last_name: this.last_name,
+            phone_number: this.phone_number,
+            address: this.address,
+            email: this.email,
+            userId,
+          }
+          await PersonalInfoServices.createPersonalInfo(personalInfoData)
+          this.closeModal() // Close the modal on success
+          this.$emit('personalInfo-added') // Emit an event to notify the parent component
+        } catch (error) {
+          console.error('Failed to add personal info:', error)
+        }
+      }
     },
   },
 }

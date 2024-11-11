@@ -75,15 +75,24 @@ export default {
   methods: {
     closeModal() {
       this.$emit('close-modal')
+      this.resetFields()
+    },
+    resetFields() {
+      this.job_title = ''
+      this.company_name = ''
+      this.location = ''
+      this.responsibilities = ''
+      this.start_date = ''
+      this.end_date = ''
     },
     async saveExperience() {
       if (
-        this.job_title &&
-        this.company_name &&
-        this.location &&
-        this.responsibilities &&
-        this.start_date &&
-        this.end_date
+        this.job_title.trim() &&
+        this.company_name.trim() &&
+        this.location.trim() &&
+        this.responsibilities.trim() &&
+        this.start_date.trim() &&
+        this.end_date.trim()
       ) {
         try {
           const userId = Utils.getStore('user').userId

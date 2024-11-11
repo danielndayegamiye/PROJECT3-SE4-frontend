@@ -223,8 +223,40 @@
 
       <!-- Experience Section -->
       <div class="section">
-        <h2>Experience</h2>
+        <h2 @click="toggleExperienceExpand">
+          Experience
+          <v-icon
+            :class="{ rotated: experienceExpanded }"
+            class="arrow-icon"
+            size="small"
+            >mdi-chevron-down</v-icon
+          >
+        </h2>
         <button class="plus-icon" @click="openExperienceModal">+</button>
+
+        <v-expand-transition>
+          <div v-show="experienceExpanded" class="expanded-content">
+            <v-list class="list" dense>
+              <v-list-item
+                v-for="experience in experiences"
+                :key="experience.id"
+                class="list-item"
+                density="compact"
+                :title="`${experience.job_title.trim()} ${personalInfo.last_name.trim()}, ${personalInfo.email.trim()}, ${personalInfo.phone_number.trim()}`"
+              >
+                <template v-slot:append
+                  ><v-icon class="icon mr-4">mdi-pencil</v-icon
+                  ><v-icon class="icon" @click="deleteExperience(experience.id)"
+                    >mdi-delete</v-icon
+                  ></template
+                >
+                <template v-slot:prepend
+                  ><v-checkbox-btn></v-checkbox-btn
+                ></template>
+              </v-list-item>
+            </v-list>
+          </div>
+        </v-expand-transition>
       </div>
 
       <!-- Modal for Experience -->
@@ -278,6 +310,7 @@ import InterestServices from '@/services/interestServices'
 import PersonalInfoServices from '@/services/personalInfoServices'
 import LinksModal from '../components/LinksModal.vue' //Importing the links Modal
 import AwardsModal from '@/components/AwardsModal.vue'
+import ExperienceServices from '@/services/experienceServices'
 
 export default {
   components: {
@@ -297,6 +330,7 @@ export default {
       this.fetchLink(),
       this.fetchInterest(),
       this.fetchPersonalInfos()
+    this.fetchExperiences()
   },
 
   data() {
@@ -306,6 +340,7 @@ export default {
       links: [],
       interests: [],
       personalInfos: [],
+      experiences: [],
       modalVisible: false,
       personalInfoModalVisible: false, // Modal visibility for personal info
       skillsModalVisible: false,
@@ -320,6 +355,7 @@ export default {
       educationExpanded: false,
       linksExpanded: false,
       personalInfoExpanded: false,
+      experienceExpanded: false,
       activeSection: '',
     }
   },
@@ -410,13 +446,39 @@ export default {
         console.error('Failed to fetch personal info:', error)
       }
     },
+    async fetchExperiences() {
+      try {
+        const userId = Utils.getStore('user').userId // Retrieve userId from Utils
+        const response = await ExperienceServices.getExperienceByUserId(userId)
+        this.experiences = response.data.map(experience => ({
+          ...experience,
+          props: {
+            appendIcon: 'mdi-delete',
+          },
+        }))
+        console.log('Fetched Experiences:', this.experiences)
+      } catch (error) {
+        console.error('Failed to fetch experiences:', error)
+      }
+    },
     async deletePersonalInfo(personalInfoId) {
       try {
         await PersonalInfoServices.deletePersonalInfo(personalInfoId)
         this.fetchPersonalInfos()
-        console.log(`Skill with id ${personalInfoId} deleted successfully.`)
+        console.log(
+          `Personal Info with id ${personalInfoId} deleted successfully.`,
+        )
       } catch (error) {
-        console.error('Failed to delete skill:', error)
+        console.error('Failed to delete personal info:', error)
+      }
+    },
+    async deleteExperience(experienceId) {
+      try {
+        await ExperienceServices.deleteExperience(experienceId)
+        this.fetchExperiences()
+        console.log(`Experience with id ${experienceId} deleted successfully.`)
+      } catch (error) {
+        console.error('Failed to delete experience:', error)
       }
     },
     // Methods for handling personal info modal
@@ -466,6 +528,7 @@ export default {
     },
     closeExperienceModal() {
       this.experienceModalVisible = false
+      this.fetchExperiences()
     },
     openAwardsModal() {
       this.awardsModalVisible = true
@@ -487,6 +550,9 @@ export default {
     },
     togglePersonalInfoExpand() {
       this.personalInfoExpanded = !this.personalInfoExpanded
+    },
+    toggleExperienceExpand() {
+      this.experienceExpanded = !this.experienceExpanded
     },
     // Empty method for generating resume
     generateResume() {

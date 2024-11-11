@@ -36,11 +36,15 @@
                 :key="personalInfo.id"
                 class="list-item"
                 density="compact"
-                :title="`${personalInfo.first_name.trim()} ${personalInfo.last_name.trim()}, ${personalInfo.phone_number.trim()}, ${personalInfo.email.trim()}`"
+                :title="`${personalInfo.first_name.trim()} ${personalInfo.last_name.trim()}, ${personalInfo.email.trim()}, ${personalInfo.phone_number.trim()}`"
               >
                 <template v-slot:append
                   ><v-icon class="icon mr-4">mdi-pencil</v-icon
-                  ><v-icon class="icon">mdi-delete</v-icon></template
+                  ><v-icon
+                    class="icon"
+                    @click="deletePersonalInfo(personalInfo.id)"
+                    >mdi-delete</v-icon
+                  ></template
                 >
                 <template v-slot:prepend
                   ><v-checkbox-btn></v-checkbox-btn
@@ -291,7 +295,8 @@ export default {
     this.fetchSkills(),
       this.fetchEducation(),
       this.fetchLink(),
-      this.fetchInterest()
+      this.fetchInterest(),
+      this.fetchPersonalInfos()
   },
 
   data() {
@@ -405,12 +410,22 @@ export default {
         console.error('Failed to fetch personal info:', error)
       }
     },
+    async deletePersonalInfo(personalInfoId) {
+      try {
+        await PersonalInfoServices.deletePersonalInfo(personalInfoId)
+        this.fetchPersonalInfos()
+        console.log(`Skill with id ${personalInfoId} deleted successfully.`)
+      } catch (error) {
+        console.error('Failed to delete skill:', error)
+      }
+    },
     // Methods for handling personal info modal
     openPersonalInfoModal() {
       this.personalInfoModalVisible = true
     },
     closePersonalInfoModal() {
       this.personalInfoModalVisible = false
+      this.fetchPersonalInfos()
     },
     openSkillsModal() {
       this.skillsModalVisible = true

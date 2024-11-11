@@ -242,7 +242,7 @@
                 :key="experience.id"
                 class="list-item"
                 density="compact"
-                :title="`${experience.job_title.trim()} ${personalInfo.last_name.trim()}, ${personalInfo.email.trim()}, ${personalInfo.phone_number.trim()}`"
+                :title="`${experience.job_title.trim()}, ${experience.company_name.trim()}, ${experience.start_date.trim()} - ${experience.end_date.trim()}`"
               >
                 <template v-slot:append
                   ><v-icon class="icon mr-4">mdi-pencil</v-icon

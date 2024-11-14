@@ -31,6 +31,14 @@
             </div>
             <span class="arrow">→</span>
           </div>
+          <div class="option-card" @click="useCohere">
+            <span class="icon">📄</span>
+            <div class="text-content">
+              <h3>Check Resume with AI</h3>
+              <p>tailor resume to job description</p>
+            </div>
+            <span class="arrow">→</span>
+          </div>
         </div>
 
         <!-- Recent Resumes Section -->
@@ -111,6 +119,9 @@ export default {
     },
     startFromScratch() {
       this.$router.push('/builder')
+    },
+    useCohere() {
+      this.$router.push('/cohere')
     },
     viewExistingResumes() {
       this.showResumeList = true // Show the ResumeList modal

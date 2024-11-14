@@ -42,7 +42,13 @@
                   ><v-icon class="icon mr-4">mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
-                    @click="deletePersonalInfo(personalInfo.id)"
+                    @click="
+                      openDeleteModal(
+                        personalInfo.id,
+                        `${personalInfo.first_name.trim()} ${personalInfo.last_name.trim()}, ${personalInfo.email.trim()}, ${personalInfo.phone_number.trim()}`,
+                        'Personal Info',
+                      )
+                    "
                     >mdi-delete</v-icon
                   ></template
                 >
@@ -86,7 +92,13 @@
               >
                 <template v-slot:append
                   ><v-icon class="icon mr-4">mdi-pencil</v-icon
-                  ><v-icon class="icon">mdi-delete</v-icon></template
+                  ><v-icon
+                    class="icon"
+                    @click="
+                      openDeleteModal(skill.id, `${skill.name.trim()}`, 'Skill')
+                    "
+                    >mdi-delete</v-icon
+                  ></template
                 >
                 <template v-slot:prepend
                   ><v-checkbox-btn></v-checkbox-btn
@@ -129,7 +141,17 @@
               >
                 <template v-slot:append
                   ><v-icon class="icon mr-4">mdi-pencil</v-icon
-                  ><v-icon class="icon">mdi-delete</v-icon></template
+                  ><v-icon
+                    class="icon"
+                    @click="
+                      openDeleteModal(
+                        edu.id,
+                        `${edu.degree.trim()}, ${edu.institution.trim()}`,
+                        'Education',
+                      )
+                    "
+                    >mdi-delete</v-icon
+                  ></template
                 >
                 <template v-slot:prepend
                   ><v-checkbox-btn></v-checkbox-btn
@@ -160,7 +182,7 @@
 
         <v-expand-transition>
           <div v-show="interestsExpanded" class="expanded-content">
-            <v-list class="skills-list" dense>
+            <v-list class="list" dense>
               <v-list-item
                 v-for="interest in interests"
                 :key="interest.id"
@@ -170,7 +192,17 @@
               >
                 <template v-slot:append
                   ><v-icon class="icon mr-4">mdi-pencil</v-icon
-                  ><v-icon class="icon">mdi-delete</v-icon></template
+                  ><v-icon
+                    class="icon"
+                    @click="
+                      openDeleteModal(
+                        interest.id,
+                        `${interest.careerPosition.trim()}`,
+                        'Interest',
+                      )
+                    "
+                    >mdi-delete</v-icon
+                  ></template
                 >
                 <template v-slot:prepend
                   ><v-checkbox-btn></v-checkbox-btn
@@ -211,7 +243,13 @@
               >
                 <template v-slot:append
                   ><v-icon class="icon mr-4">mdi-pencil</v-icon
-                  ><v-icon class="icon">mdi-delete</v-icon></template
+                  ><v-icon
+                    class="icon"
+                    @click="
+                      openDeleteModal(link.id, `${link.type.trim()}`, 'Link')
+                    "
+                    >mdi-delete</v-icon
+                  ></template
                 >
                 <template v-slot:prepend
                   ><v-checkbox-btn></v-checkbox-btn
@@ -252,7 +290,15 @@
               >
                 <template v-slot:append
                   ><v-icon class="icon mr-4">mdi-pencil</v-icon
-                  ><v-icon class="icon" @click="deleteExperience(experience.id)"
+                  ><v-icon
+                    class="icon"
+                    @click="
+                      openDeleteModal(
+                        experience.id,
+                        `${experience.job_title.trim()}, ${experience.company_name.trim()}, ${experience.start_date.trim()} - ${experience.end_date.trim()}`,
+                        'Experience',
+                      )
+                    "
                     >mdi-delete</v-icon
                   ></template
                 >
@@ -284,13 +330,47 @@
 
       <!-- Awards Section -->
       <div class="section">
-        <h2>Awards</h2>
+        <h2 @click="toggleAwardsExpand">
+          Awards
+          <v-icon
+            :class="{ rotated: awardsExpanded }"
+            class="arrow-icon"
+            size="small"
+            >mdi-chevron-down</v-icon
+          >
+        </h2>
         <button class="plus-icon" @click="openAwardsModal">+</button>
+
+        <v-expand-transition>
+          <div v-show="awardsExpanded" class="expanded-content">
+            <v-list class="list" dense>
+              <v-list-item
+                v-for="award in awards"
+                :key="award.id"
+                class="list-item"
+                density="compact"
+                :title="award.title"
+              >
+                <template v-slot:append
+                  ><v-icon class="icon mr-4">mdi-pencil</v-icon
+                  ><v-icon class="icon" @click="deleteAward(award.id)"
+                    >mdi-delete</v-icon
+                  ></template
+                >
+                <template v-slot:prepend
+                  ><v-checkbox-btn></v-checkbox-btn
+                ></template>
+              </v-list-item>
+            </v-list>
+          </div>
+        </v-expand-transition>
       </div>
+
+      <!-- Modal for Awards -->
       <AwardsModal
         :showModal="awardsModalVisible"
         @close-modal="closeAwardsModal"
-      />
+      ></AwardsModal>
     </div>
 
     <!-- Generate Resume Button -->
@@ -298,6 +378,15 @@
       <v-btn color="primary" @click="generateResume">Generate Resume</v-btn>
     </div>
   </div>
+
+  <DeleteConfirm
+    :showModal="deleteModalVisible"
+    :itemId="itemToDeleteId"
+    :itemName="itemToDeleteName"
+    :deleteService="deleteService"
+    @close-modal="closeDeleteModal"
+    @confirm-delete="deleteItem"
+  />
 </template>
 
 <script>
@@ -315,31 +404,34 @@ import EducationServices from '@/services/educationServices'
 import LinkServices from '@/services/linkServices'
 import InterestServices from '@/services/interestServices'
 import PersonalInfoServices from '@/services/personalInfoServices'
-import LinksModal from '../components/LinksModal.vue' //Importing the links Modal
+import LinksModal from '../components/LinksModal.vue'
 import AwardsModal from '@/components/AwardsModal.vue'
 import ExperienceServices from '@/services/experienceServices'
+import DeleteConfirm from '@/components/DeleteConfirm.vue'
+import AwardsServices from '@/services/awardsServices'
 
 export default {
   components: {
     NavBar,
-    PersonalInfoModal, // Register PersonalInfoModal component
-    SkillsModal, //Register SkillsModal component
-    EducationModal, //Register EducationModal component
-    ProjectsModal, //Register ProjectsModal component
+    PersonalInfoModal,
+    SkillsModal,
+    EducationModal,
+    ProjectsModal,
     ExperienceModal,
     LinksModal,
     InterestsModal,
     AwardsModal,
+    DeleteConfirm,
   },
   created() {
     this.fetchSkills(),
       this.fetchEducation(),
       this.fetchLink(),
       this.fetchInterest(),
-      this.fetchPersonalInfos()
-    this.fetchExperiences()
+      this.fetchPersonalInfos(),
+      this.fetchExperiences(),
+      this.fetchAwards()
   },
-
   data() {
     return {
       skills: [],
@@ -348,8 +440,9 @@ export default {
       interests: [],
       personalInfos: [],
       experiences: [],
+      awards: [],
       modalVisible: false,
-      personalInfoModalVisible: false, // Modal visibility for personal info
+      personalInfoModalVisible: false,
       skillsModalVisible: false,
       educationModalVisible: false,
       interestsModalVisible: false,
@@ -357,17 +450,21 @@ export default {
       projectsModalVisible: false,
       experienceModalVisible: false,
       awardsModalVisible: false,
+      deleteModalVisible: false,
       skillsExpanded: false,
       interestsExpanded: false,
       educationExpanded: false,
       linksExpanded: false,
       personalInfoExpanded: false,
       experienceExpanded: false,
+      itemToDeleteId: null,
+      itemToDeleteName: '',
+      deleteService: '',
+      awardsExpanded: false,
       activeSection: '',
     }
   },
   methods: {
-    // Method to open modal for regular sections
     openModal(sectionName) {
       this.activeSection = sectionName
       this.modalVisible = true
@@ -378,13 +475,11 @@ export default {
     },
     async fetchSkills() {
       try {
-        const userId = Utils.getStore('user').userId // Retrieve userId from Utils
-        const response = await SkillServices.getSkillsByUserId(userId) // Fetch skills from the server
+        const userId = Utils.getStore('user').userId
+        const response = await SkillServices.getSkillsByUserId(userId)
         this.skills = response.data.map(skill => ({
           ...skill,
-          props: {
-            appendIcon: 'mdi-delete',
-          },
+          props: { appendIcon: 'mdi-delete' },
         }))
         console.log('Here: ' + this.skills)
       } catch (error) {
@@ -393,13 +488,11 @@ export default {
     },
     async fetchEducation() {
       try {
-        const userId = Utils.getStore('user').userId // Retrieve userId from Utils
-        const response = await EducationServices.getEducationByUserId(userId) // Fetch education from the server
+        const userId = Utils.getStore('user').userId
+        const response = await EducationServices.getEducationByUserId(userId)
         this.education = response.data.map(edu => ({
           ...edu,
-          props: {
-            appendIcon: 'mdi-delete',
-          },
+          props: { appendIcon: 'mdi-delete' },
         }))
         console.log('Fetched Education:', this.education)
       } catch (error) {
@@ -408,14 +501,11 @@ export default {
     },
     async fetchLink() {
       try {
-        const userId = Utils.getStore('user').userId // Retrieve userId from Utils
-        const response = await LinkServices.getLinksByUserId(userId) // Fetch education from the server
-        console.log(response.data)
+        const userId = Utils.getStore('user').userId
+        const response = await LinkServices.getLinksByUserId(userId)
         this.links = response.data.map(link => ({
           ...link,
-          props: {
-            appendIcon: 'mdi-delete',
-          },
+          props: { appendIcon: 'mdi-delete' },
         }))
         console.log('Fetched links:', this.links)
       } catch (error) {
@@ -424,13 +514,11 @@ export default {
     },
     async fetchInterest() {
       try {
-        const userId = Utils.getStore('user').userId // Retrieve userId from Utils
-        const response = await InterestServices.getInterestsByUserId(userId) // Fetch education from the server
+        const userId = Utils.getStore('user').userId
+        const response = await InterestServices.getInterestsByUserId(userId)
         this.interests = response.data.map(interest => ({
           ...interest,
-          props: {
-            appendIcon: 'mdi-delete',
-          },
+          props: { appendIcon: 'mdi-delete' },
         }))
         console.log('Fetched Interest:', this.interests)
       } catch (error) {
@@ -439,14 +527,12 @@ export default {
     },
     async fetchPersonalInfos() {
       try {
-        const userId = Utils.getStore('user').userId // Retrieve userId from Utils
+        const userId = Utils.getStore('user').userId
         const response =
           await PersonalInfoServices.getPersonalInfoByUserId(userId)
         this.personalInfos = response.data.map(personalInfo => ({
           ...personalInfo,
-          props: {
-            appendIcon: 'mdi-delete',
-          },
+          props: { appendIcon: 'mdi-delete' },
         }))
         console.log('Fetched Personal Info:', this.personalInfos)
       } catch (error) {
@@ -455,17 +541,28 @@ export default {
     },
     async fetchExperiences() {
       try {
-        const userId = Utils.getStore('user').userId // Retrieve userId from Utils
+        const userId = Utils.getStore('user').userId
         const response = await ExperienceServices.getExperienceByUserId(userId)
         this.experiences = response.data.map(experience => ({
           ...experience,
-          props: {
-            appendIcon: 'mdi-delete',
-          },
+          props: { appendIcon: 'mdi-delete' },
         }))
         console.log('Fetched Experiences:', this.experiences)
       } catch (error) {
         console.error('Failed to fetch experiences:', error)
+      }
+    },
+    async fetchAwards() {
+      try {
+        const userId = Utils.getStore('user').userId
+        const response = await AwardsServices.getAwardsByUserId(userId)
+        this.awards = response.data.map(award => ({
+          ...award,
+          props: { appendIcon: 'mdi-delete' },
+        }))
+        console.log('Fetched Awards:', this.awards)
+      } catch (error) {
+        console.error('Failed to fetch awards:', error)
       }
     },
     async deletePersonalInfo(personalInfoId) {
@@ -488,7 +585,82 @@ export default {
         console.error('Failed to delete experience:', error)
       }
     },
+    async deleteSkill(skillId) {
+      try {
+        await SkillServices.deleteSkill(skillId)
+        this.fetchSkills()
+        console.log(`Skill with id ${skillId} deleted successfully.`)
+      } catch (error) {
+        console.error('Failed to delete skill:', error)
+      }
+    },
+    async deleteEducation(educationId) {
+      try {
+        await EducationServices.deleteEducation(educationId)
+        this.fetchEducation()
+        console.log(`Education with id ${educationId} deleted successfully.`)
+      } catch (error) {
+        console.error('Failed to delete education:', error)
+      }
+    },
+    async deleteInterest(interestId) {
+      try {
+        await InterestServices.deleteInterest(interestId)
+        this.fetchInterest()
+        console.log(`Interest with id ${interestId} deleted successfully.`)
+      } catch (error) {
+        console.error('Failed to delete interest:', error)
+      }
+    },
+    async deleteLink(linkId) {
+      try {
+        await LinkServices.deleteLink(linkId)
+        this.fetchLink()
+        console.log(`Link with id ${linkId} deleted successfully.`)
+      } catch (error) {
+        console.error('Failed to delete link:', error)
+      }
+    },
+    deleteItem(itemId, deleteService) {
+      switch (deleteService) {
+        case 'Personal Info':
+          this.deletePersonalInfo(itemId)
+          break
+        case 'Skill':
+          this.deleteSkill(itemId)
+          break
+        case 'Education':
+          this.deleteEducation(itemId)
+          break
+        case 'Interest':
+          this.deleteInterest(itemId)
+          break
+        case 'Link':
+          this.deleteLink(itemId)
+          break
+        case 'Experience':
+          this.deleteExperience(itemId)
+          break
+        case 'Project':
+          break
+        case 'Award':
+          break
+        default:
+          break
+      }
+
+      this.closeDeleteModal()
+    },
     // Methods for handling personal info modal
+    async deleteAward(awardId) {
+      try {
+        await AwardsServices.deleteAward(awardId)
+        this.fetchAwards()
+        console.log(`Award with id ${awardId} deleted successfully.`)
+      } catch (error) {
+        console.error('Failed to delete award:', error)
+      }
+    },
     openPersonalInfoModal() {
       this.personalInfoModalVisible = true
     },
@@ -542,6 +714,19 @@ export default {
     },
     closeAwardsModal() {
       this.awardsModalVisible = false
+      this.fetchAwards()
+    },
+    openDeleteModal(itemId, itemName, deleteService) {
+      this.itemToDeleteId = itemId
+      this.itemToDeleteName = itemName
+      this.deleteService = deleteService
+      this.deleteModalVisible = true
+    },
+    closeDeleteModal() {
+      this.deleteModalVisible = false
+      this.itemToDeleteId = null
+      this.itemToDeleteName = ''
+      this.deleteService = ''
     },
     toggleSkillsExpand() {
       this.skillsExpanded = !this.skillsExpanded
@@ -561,7 +746,9 @@ export default {
     toggleExperienceExpand() {
       this.experienceExpanded = !this.experienceExpanded
     },
-    // Empty method for generating resume
+    toggleAwardsExpand() {
+      this.awardsExpanded = !this.awardsExpanded
+    },
     generateResume() {
       const doc = new jsPDF()
 
@@ -643,7 +830,7 @@ export default {
 <style scoped>
 /* New styling for the navbar */
 .navbar {
-  background-color: #82152b; /* Set the new navbar color */
+  background-color: #82152b;
   color: white;
   padding: 1rem;
 }
@@ -674,24 +861,22 @@ export default {
   flex-direction: column;
   gap: 2rem;
   max-width: 900px;
-  margin: 0 auto; /* Center the content */
+  margin: 0 auto;
 }
 
-/* Styling for individual sections */
 .section {
   border: 1px solid #ddd;
   padding: 1.5rem;
   border-radius: 8px;
   background-color: #f9f9f9;
   position: relative;
-  transition: box-shadow 0.3s ease; /* Add a smooth shadow effect */
+  transition: box-shadow 0.3s ease;
 }
 
 .section:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Plus icon styling */
 .plus-icon {
   position: absolute;
   right: 1rem;
@@ -701,11 +886,11 @@ export default {
   border: none;
   color: #82152b;
   cursor: pointer;
-  transition: transform 0.3s ease; /* Add animation */
+  transition: transform 0.3s ease;
 }
 
 .plus-icon:hover {
-  transform: scale(1.2); /* Scale up the icon on hover */
+  transform: scale(1.2);
 }
 
 .arrow-icon {
@@ -733,7 +918,6 @@ export default {
   transform: scale(1.2);
 }
 
-/* Modal overlay styling */
 .modal {
   position: fixed;
   top: 0;
@@ -746,7 +930,6 @@ export default {
   justify-content: center;
 }
 
-/* Modal content box styling */
 .modal-content {
   background: white;
   padding: 2rem;
@@ -754,10 +937,9 @@ export default {
   width: 400px;
   text-align: center;
   position: relative;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Box shadow for better appearance */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-/* Close button styling */
 .close-button {
   position: absolute;
   top: 0.5rem;
@@ -766,14 +948,12 @@ export default {
   cursor: pointer;
 }
 
-/* Styling for the Generate Resume button */
 .generate-resume {
   display: flex;
   justify-content: center;
   margin-top: 3rem;
 }
 
-/* Additional styling to make the layout look more polished */
 h2 {
   font-size: 1.4rem;
   color: #333;
@@ -805,7 +985,6 @@ button {
 }
 
 @media (max-width: 768px) {
-  /* Responsive design adjustments for smaller screens */
   .resume-sections {
     padding: 1rem;
   }

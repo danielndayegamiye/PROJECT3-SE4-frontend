@@ -22,12 +22,12 @@
             required
           ></v-text-field>
 
-          <!-- Year input (removed number-specific input and dropdown) -->
+          <!-- Year input (simple text field, no number-specific input) -->
           <v-text-field
             label="Year"
             outlined
             class="text-field"
-            v-model="award.year"
+            v-model="award.year_Awarded"
             required
           ></v-text-field>
         </v-form>
@@ -43,6 +43,9 @@
 </template>
 
 <script>
+import AwardServices from '../services/awardsServices.js'
+import Utils from '../config/utils.js'
+
 export default {
   name: 'AwardsModal',
   props: {
@@ -53,21 +56,35 @@ export default {
       award: {
         title: '',
         description: '',
-        year: '',
+        year_Awarded: '',
       },
     }
   },
   methods: {
     closeModal() {
       this.$emit('close-modal')
+      this.resetForm() // Clear the form when the modal is closed
     },
-    saveAward() {
-      this.$emit('award-added', { ...this.award })
-      this.closeModal()
-      this.resetForm()
+    async saveAward() {
+      if (
+        this.award.title.trim() &&
+        this.award.description.trim() &&
+        this.award.year_Awarded.trim()
+      ) {
+        try {
+          const userId = Utils.getStore('user').userId // Retrieve userId from Utils
+          const awardData = { ...this.award, userId } // Include userId in award data
+
+          await AwardServices.createAward(awardData) // Call createAward from AwardServices
+          this.$emit('award-added') // Notify parent component of new award
+          this.closeModal() // Close the modal on success
+        } catch (error) {
+          console.error('Failed to add award:', error) // Error handling
+        }
+      }
     },
     resetForm() {
-      this.award = { title: '', description: '', year: '' }
+      this.award = { title: '', description: '', year_Awarded: '' }
     },
   },
 }

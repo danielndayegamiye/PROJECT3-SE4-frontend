@@ -15,6 +15,7 @@
     "axios": "^1.7.7",
     "jspdf": "^2.5.2",
     "pdfjs-dist": "^4.8.69",
+    "cohere-ai": "^7.14.0",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5",
     "vuetify": "^3.7.3",

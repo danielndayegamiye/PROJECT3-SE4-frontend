@@ -26,7 +26,7 @@ jobs:
           echo VITE_CLIENT_ID="$VITE_CLIENT_ID" >> .env
           echo VITE_API_URL="$VITE_API_URL" >> .env
           echo VITE_CLIENT_URL=project3.eaglesoftwareteam.com >> .env
-          echo VITE_APP_SITE_URL=project3.eaglesoftwareteam.com >> .env
+          echo VITE_SITE_URL=project3.eaglesoftwareteam.com >> .env
 
       - run: npm install
       - run: npm run build

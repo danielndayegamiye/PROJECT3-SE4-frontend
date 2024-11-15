@@ -41,7 +41,7 @@ export default {
     return {
       resumes: [],
       currentPage: 1,
-      pageSize: 5, // Show 5 resumes per page
+      pageSize: 4, // Show 5 resumes per page
     }
   },
   computed: {

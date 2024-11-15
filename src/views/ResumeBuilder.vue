@@ -391,12 +391,13 @@
 
 <script>
 import NavBar from '../components/nav.vue'
-import PersonalInfoModal from '../components/PersonalInfo.vue'
-import SkillsModal from '../components/SkillsModal.vue'
-import EducationModal from '../components/educationModal.vue'
-import InterestsModal from '../components/InterestsModal.vue'
-import ProjectsModal from '../components/ProjectsModal.vue'
-import ExperienceModal from '@/components/ExperienceModal.vue'
+import jsPDF from 'jspdf'
+import PersonalInfoModal from '../components/PersonalInfo.vue' // Importing the Personal Info modal
+import SkillsModal from '../components/SkillsModal.vue' //Importing the Skills Modal
+import EducationModal from '../components/educationModal.vue' //Importing the education Modal
+import InterestsModal from '../components/InterestsModal.vue' //Importing the interests Modal
+import ProjectsModal from '../components/ProjectsModal.vue' //Importing the projects Modal
+import ExperienceModal from '@/components/ExperienceModal.vue' //Importing the Experience Modal
 import Utils from '../config/utils'
 import SkillServices from '@/services/skillsServices'
 import EducationServices from '@/services/educationServices'
@@ -749,7 +750,78 @@ export default {
       this.awardsExpanded = !this.awardsExpanded
     },
     generateResume() {
-      console.log('Generate Resume button clicked!')
+      const doc = new jsPDF()
+
+      // Personal Info Section
+      if (this.personalInfos.length > 0) {
+        const personalInfo = this.personalInfos[0] // Assuming only one personal info entry
+        doc.setFontSize(16)
+        doc.text('Personal Information', 10, 10)
+        doc.setFontSize(12)
+        doc.text(
+          `Name: ${personalInfo.first_name.trim()} ${personalInfo.last_name.trim()}`,
+          10,
+          20,
+        )
+        doc.text(`Email: ${personalInfo.email.trim()}`, 10, 30)
+        doc.text(`Phone: ${personalInfo.phone_number.trim()}`, 10, 40)
+      }
+
+      // Skills Section
+      if (this.skills.length > 0) {
+        doc.setFontSize(16)
+        doc.text('Skills', 10, 50)
+        doc.setFontSize(12)
+        this.skills.forEach((skill, index) => {
+          doc.text(`${index + 1}. ${skill.name}`, 10, 60 + index * 10)
+        })
+      }
+
+      // Education Section
+      if (this.education.length > 0) {
+        doc.setFontSize(16)
+        doc.text('Education', 10, 80 + this.skills.length * 10)
+        doc.setFontSize(12)
+        this.education.forEach((edu, index) => {
+          doc.text(
+            `${edu.degree.trim()}, ${edu.institution.trim()}`,
+            10,
+            90 + this.skills.length * 10 + index * 10,
+          )
+        })
+      }
+
+      // Experience Section
+      if (this.experiences.length > 0) {
+        doc.setFontSize(16)
+        doc.text(
+          'Experience',
+          10,
+          100 + this.skills.length * 10 + this.education.length * 10,
+        )
+        doc.setFontSize(12)
+        this.experiences.forEach((experience, index) => {
+          doc.text(
+            `${experience.job_title.trim()} at ${experience.company_name.trim()}`,
+            10,
+            110 +
+              this.skills.length * 10 +
+              this.education.length * 10 +
+              index * 10,
+          )
+          doc.text(
+            `Duration: ${experience.start_date.trim()} - ${experience.end_date.trim()}`,
+            10,
+            120 +
+              this.skills.length * 10 +
+              this.education.length * 10 +
+              index * 10,
+          )
+        })
+      }
+
+      // Save or open the PDF
+      doc.save('resume.pdf')
     },
   },
 }

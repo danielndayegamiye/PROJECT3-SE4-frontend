@@ -3,7 +3,7 @@
     <!-- Logo Placeholder -->
     <div class="navbar-logo">
       <router-link to="/home">
-        <img src="../../resume.png" alt="Logo" class="logo" />
+        <img src="../../public/okla-christian.svg" alt="Logo" class="logo" />
       </router-link>
     </div>
 

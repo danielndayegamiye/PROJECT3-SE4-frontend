@@ -359,7 +359,6 @@
         @close-modal="closeProjectsModal"
       />
 
-
       <!-- Awards Section -->
       <div class="section">
         <h2 @click="toggleAwardsExpand">
@@ -536,17 +535,17 @@ export default {
     },
     async fetchProjects() {
       try {
-        const userId = Utils.getStore('user').userId; // Retrieve userId from Utils
-        const response = await ProjectsServices.getProjectsByUserId(userId); // Fetch projects from the server
+        const userId = Utils.getStore('user').userId // Retrieve userId from Utils
+        const response = await ProjectsServices.getProjectsByUserId(userId) // Fetch projects from the server
         this.projects = response.data.map(project => ({
           ...project,
           props: {
             appendIcon: 'mdi-delete',
           },
-        }));
-        console.log('Fetched Projects:', this.projects);
+        }))
+        console.log('Fetched Projects:', this.projects)
       } catch (error) {
-        console.error('Failed to fetch projects:', error);
+        console.error('Failed to fetch projects:', error)
       }
     },
 
@@ -752,6 +751,7 @@ export default {
     },
     closeProjectsModal() {
       this.projectsModalVisible = false
+      this.fetchProjects()
     },
     openExperienceModal() {
       this.experienceModalVisible = true

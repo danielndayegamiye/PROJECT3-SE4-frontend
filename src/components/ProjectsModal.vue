@@ -4,16 +4,16 @@
       <v-card-title class="modal-title">Projects</v-card-title>
       <v-card-text>
         <v-form>
-          <v-text-field label="Project Name" class="text-field"></v-text-field>
-          <v-text-field label="Description" class="text-field"></v-text-field>
-          <v-text-field label="Your Role" class="text-field"></v-text-field>
-          <v-text-field label="Results" class="text-field"></v-text-field>
+          <v-text-field v-model="project_name" label="Project Name" class="text-field"></v-text-field>
+          <v-text-field v-model="description" label="Description" class="text-field"></v-text-field>
+          <v-text-field v-model="role" label="Your Role" class="text-field"></v-text-field>
+          <v-text-field v-model="results" label="Results" class="text-field"></v-text-field>
         </v-form>
       </v-card-text>
       <v-card-actions class="actions">
         <div class="button-container">
           <v-btn @click="closeModal" class="cancel-button" text>Cancel</v-btn>
-          <v-btn color="primary" @click="closeModal">Save</v-btn>
+          <v-btn color="primary" @click="saveProjects">Save</v-btn>
         </div>
       </v-card-actions>
     </v-card>
@@ -21,6 +21,9 @@
 </template>
 
 <script>
+import ProjectsServices from '../services/projectsServices'
+import Utils from '../config/utils.js'
+
 export default {
   name: 'ProjectsModal',
   props: {
@@ -28,13 +31,36 @@ export default {
   },
   data() {
     return {
-      showTextField: false,
+      project_name: '',
+      description: '',
+      role: '',
+      results: ''
     }
   },
   methods: {
     closeModal() {
       this.$emit('close-modal');
-    }
+    },
+    async saveProjects() {
+      if (this.project_name.trim() && this.description.trim() && this.role.trim() && this.results.trim()) {
+        try {
+          const userId = Utils.getStore('user').userId;
+          const projectsData = {
+            project_name: this.project_name,
+            description: this.description,
+            role: this.role,
+            results: this.results,
+            userId
+          };
+
+          await ProjectsServices.createProjects(projectsData);
+          this.closeModal(); // Close the modal on success
+          this.$emit('projects-added'); // Emit an event to notify the parent component
+        } catch (error) {
+          console.error('Failed to add projects:', error);
+        }
+      }
+    },
   }
 
 }

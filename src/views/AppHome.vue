@@ -82,6 +82,7 @@
 import NavBar from '../components/nav.vue'
 import ResumeList from '../components/ResumeList.vue'
 import apiClient from '../services/services.js'
+import Utils from '@/config/utils'
 
 export default {
   name: 'AppHome',
@@ -108,8 +109,9 @@ export default {
   },
   methods: {
     fetchResumes() {
+      const userId = Utils.getStore('user').userId
       apiClient
-        .get('/resumes')
+        .get('/resumes/' + userId)
         .then(response => {
           this.resumes = response.data
         })

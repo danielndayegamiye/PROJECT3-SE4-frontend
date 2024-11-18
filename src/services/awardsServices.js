@@ -15,8 +15,8 @@ const AwardServices = {
     return apiClient.put(`/awards/${awardId}`, awardData)
   },
   // Delete an award by ID
-  deleteAward(awardId) {
-    return apiClient.delete(`/awards/${awardId}`)
+  deleteAward(id) {
+    return apiClient.delete(`/awards/${id}`)
   },
 }
 

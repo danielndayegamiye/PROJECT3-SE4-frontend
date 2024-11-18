@@ -4,9 +4,9 @@ import AuthServices from './authServices.js'
 import Router from '../router/index.js'
 var baseurl = ''
 if (import.meta.env.DEV) {
-  baseurl = 'http://localhost:3100/resume/'
+  baseurl = 'http://localhost:3027/resume-t7/'
 } else {
-  baseurl = '/resume/'
+  baseurl = '/resume-t7/'
 }
 const apiClient = axios.create({
   baseURL: baseurl,

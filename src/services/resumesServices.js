@@ -10,6 +10,9 @@ const ResumesServices = {
   getAllResumes() {
     return apiClient.get('/resumes')
   },
+  getUser(id) {
+    return apiClient.get(`/user/${id}`)
+  },
 }
 
 export default ResumesServices

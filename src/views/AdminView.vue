@@ -19,7 +19,9 @@
           <v-card-title>
             <span class="icon">📄 </span>{{ resume.title }}
           </v-card-title>
-          <v-card-subtitle>Created by: {{ resume.userId }}</v-card-subtitle>
+          <v-card-subtitle>
+            Created by: {{ userNames[resume.userId] || 'Loading...' }}
+          </v-card-subtitle>
         </v-card>
       </v-col>
     </v-row>
@@ -35,6 +37,7 @@ import ResumeServices from '@/services/resumesServices'
 import NavBar from '@/components/nav.vue'
 
 const resumes = ref([])
+const userNames = ref({}) // To store user names keyed by userId
 const currentPage = ref(1)
 const resumesPerPage = 12
 
@@ -43,10 +46,28 @@ onMounted(async () => {
   try {
     const response = await ResumeServices.getAllResumes()
     resumes.value = response.data // Ensure the backend returns an array of resumes
+
+    // Fetch user information for each resume asynchronously
+    for (const resume of resumes.value) {
+      if (!userNames.value[resume.userId]) {
+        fetchUserName(resume.userId)
+      }
+    }
   } catch (error) {
     console.error('Error fetching resumes:', error)
   }
 })
+
+// Function to fetch and cache user name
+async function fetchUserName(userId) {
+  try {
+    const response = await ResumeServices.getUser(userId) // Call the service function
+    userNames.value[userId] = response.data.fName + ' ' + response.data.lName // Assuming the user object has a "name" field
+  } catch (error) {
+    console.error(`Error fetching user with ID ${userId}:`, error)
+    userNames.value[userId] = 'Unknown User' // Handle errors gracefully
+  }
+}
 
 // Computed property for paginated resumes
 const paginatedResumes = computed(() => {

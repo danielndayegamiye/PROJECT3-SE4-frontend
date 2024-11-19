@@ -41,7 +41,6 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  console.log("inside new function")
   const isAuthenticated = localStorage.getItem('authToken') !== null;
   if (to.meta.requiresAuth && !isAuthenticated) {
     next('/login');

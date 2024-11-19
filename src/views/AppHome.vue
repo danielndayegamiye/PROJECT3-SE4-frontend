@@ -32,7 +32,7 @@
             <span class="arrow">→</span>
           </div>
           <div class="option-card" @click="useCohere">
-            <span class="icon">📄</span>
+            <span class="icon">🤖</span>
             <div class="text-content">
               <h3>Check Resume with AI</h3>
               <p>tailor resume to job description</p>

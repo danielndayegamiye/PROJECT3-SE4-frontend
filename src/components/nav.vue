@@ -17,7 +17,7 @@
 
     <!-- Dropdown Menu -->
     <div v-if="dropdownVisible" class="dropdown-menu">
-      <button @click="myInfo">My Info</button>
+
       <button @click="logout">Logout</button>
     </div>
   </nav>

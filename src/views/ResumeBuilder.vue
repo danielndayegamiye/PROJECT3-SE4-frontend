@@ -436,6 +436,25 @@
     @close-modal="closeDeleteModal"
     @confirm-delete="deleteItem"
   />
+  <!-- PDF Preview Modal -->
+<v-dialog v-model="pdfPreviewVisible" max-width="800px">
+  <v-card>
+    <v-card-title>PDF Preview</v-card-title>
+    <v-card-text>
+      <iframe
+        v-if="pdfDataUrl"
+        :src="pdfDataUrl"
+        width="100%"
+        height="600px"
+      ></iframe>
+    </v-card-text>
+    <v-card-actions>
+      <v-btn color="primary" text @click="pdfPreviewVisible = false">
+        Close
+      </v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
 </template>
 
 <script>
@@ -485,6 +504,8 @@ export default {
   },
   data() {
     return {
+      pdfPreviewVisible: false,
+    pdfDataUrl: null,
       skills: [],
       education: [],
       links: [],
@@ -833,79 +854,117 @@ export default {
       this.awardsExpanded = !this.awardsExpanded
     },
     generateResume() {
-      const doc = new jsPDF()
+  // Generate the PDF and open the preview modal
+  const doc = this.generatePdf();
+  this.pdfDataUrl = doc.output('dataurlstring');
+  this.pdfPreviewVisible = true;
+},
 
-      // Personal Info Section
-      if (this.personalInfos.length > 0) {
-        const personalInfo = this.personalInfos[0] // Assuming only one personal info entry
-        doc.setFontSize(16)
-        doc.text('Personal Information', 10, 10)
-        doc.setFontSize(12)
-        doc.text(
-          `Name: ${personalInfo.first_name.trim()} ${personalInfo.last_name.trim()}`,
-          10,
-          20,
-        )
-        doc.text(`Email: ${personalInfo.email.trim()}`, 10, 30)
-        doc.text(`Phone: ${personalInfo.phone_number.trim()}`, 10, 40)
+generatePdf() {
+  const doc = new jsPDF();
+  let yPosition = 20; // Initial Y position
+
+  // Header Section
+  doc.setFontSize(20);
+  doc.text(`${this.personalInfos[0]?.first_name} ${this.personalInfos[0]?.last_name}`, 10, yPosition);
+  yPosition += 10;
+  doc.setFontSize(12);
+  doc.text(`Location: ${this.personalInfos[0]?.address || "N/A"} | Phone: ${this.personalInfos[0]?.phone_number} | Email: ${this.personalInfos[0]?.email}`, 10, yPosition);
+  yPosition += 20;
+
+  // Professional Summary
+  if (this.personalInfos[0]?.summary) {
+    doc.setFontSize(16);
+    doc.text("Professional Summary", 10, yPosition);
+    yPosition += 10;
+    doc.setFontSize(12);
+    doc.text(this.personalInfos[0].summary, 10, yPosition, { maxWidth: 180 });
+    yPosition += 20;
+  }
+
+  // Education Section
+  if (this.education.length > 0) {
+    doc.setFontSize(16);
+    doc.text("Education", 10, yPosition);
+    yPosition += 10;
+    doc.setFontSize(12);
+    this.education.forEach(edu => {
+      doc.text(`${edu.degree} in ${edu.field_of_study}, ${edu.institution}`, 10, yPosition);
+      yPosition += 10;
+      doc.text(`Graduation Date: ${edu.graduationDate}`, 10, yPosition);
+      yPosition += 10;
+      if (edu.gpa) {
+        doc.text(`GPA: ${edu.gpa}`, 10, yPosition);
+        yPosition += 10;
       }
+      yPosition += 10;
+    });
+  }
 
-      // Skills Section
-      if (this.skills.length > 0) {
-        doc.setFontSize(16)
-        doc.text('Skills', 10, 50)
-        doc.setFontSize(12)
-        this.skills.forEach((skill, index) => {
-          doc.text(`${index + 1}. ${skill.name}`, 10, 60 + index * 10)
-        })
-      }
+  // Experience Section
+  if (this.experiences.length > 0) {
+    doc.setFontSize(16);
+    doc.text("Professional Experience", 10, yPosition);
+    yPosition += 10;
+    doc.setFontSize(12);
+    this.experiences.forEach(exp => {
+      doc.text(`${exp.job_title} at ${exp.company_name}`, 10, yPosition);
+      yPosition += 10;
+      doc.text(`Location: ${exp.location} | Duration: ${exp.start_date} - ${exp.end_date || "Present"}`, 10, yPosition);
+      yPosition += 10;
+      doc.text(exp.responsibilities, 10, yPosition, { maxWidth: 180 });
+      yPosition += 20;
+    });
+  }
 
-      // Education Section
-      if (this.education.length > 0) {
-        doc.setFontSize(16)
-        doc.text('Education', 10, 80 + this.skills.length * 10)
-        doc.setFontSize(12)
-        this.education.forEach((edu, index) => {
-          doc.text(
-            `${edu.degree.trim()}, ${edu.institution.trim()}`,
-            10,
-            90 + this.skills.length * 10 + index * 10,
-          )
-        })
-      }
+  // Skills Section
+  if (this.skills.length > 0) {
+    doc.setFontSize(16);
+    doc.text("Skills", 10, yPosition);
+    yPosition += 10;
+    doc.setFontSize(12);
+    this.skills.forEach(skill => {
+      doc.text(`- ${skill.name}`, 10, yPosition);
+      yPosition += 10;
+    });
+    yPosition += 10;
+  }
 
-      // Experience Section
-      if (this.experiences.length > 0) {
-        doc.setFontSize(16)
-        doc.text(
-          'Experience',
-          10,
-          100 + this.skills.length * 10 + this.education.length * 10,
-        )
-        doc.setFontSize(12)
-        this.experiences.forEach((experience, index) => {
-          doc.text(
-            `${experience.job_title.trim()} at ${experience.company_name.trim()}`,
-            10,
-            110 +
-              this.skills.length * 10 +
-              this.education.length * 10 +
-              index * 10,
-          )
-          doc.text(
-            `Duration: ${experience.start_date.trim()} - ${experience.end_date.trim()}`,
-            10,
-            120 +
-              this.skills.length * 10 +
-              this.education.length * 10 +
-              index * 10,
-          )
-        })
-      }
+  // Projects Section
+  if (this.projects.length > 0) {
+    doc.setFontSize(16);
+    doc.text("Projects", 10, yPosition);
+    yPosition += 10;
+    doc.setFontSize(12);
+    this.projects.forEach(project => {
+      doc.text(project.project_name, 10, yPosition);
+      yPosition += 10;
+      doc.text(`Role: ${project.role}`, 10, yPosition);
+      yPosition += 10;
+      doc.text(`Description: ${project.description}`, 10, yPosition, { maxWidth: 180 });
+      yPosition += 10;
+      doc.text(`Results: ${project.results}`, 10, yPosition);
+      yPosition += 20;
+    });
+  }
 
-      // Save or open the PDF
-      doc.save('resume.pdf')
-    },
+  // Awards Section
+  if (this.awards.length > 0) {
+    doc.setFontSize(16);
+    doc.text("Awards", 10, yPosition);
+    yPosition += 10;
+    doc.setFontSize(12);
+    this.awards.forEach(award => {
+      doc.text(`${award.title} (${award.year_Awarded})`, 10, yPosition);
+      yPosition += 10;
+      doc.text(award.description, 10, yPosition, { maxWidth: 180 });
+      yPosition += 20;
+    });
+  }
+
+  // Return the generated PDF
+  return doc;
+},
   },
 }
 </script>

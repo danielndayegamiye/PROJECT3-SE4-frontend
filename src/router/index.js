@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Login from '@/views/Login.vue'
 import AppHome from '@/views/AppHome.vue'
 import cohere from '@/views/Cohere.vue'
-import ResumeBuilder from '@/views/ResumeBuilder.vue'
+import ResumeBuilder from '@/views/ResumeBuilder.vue' // Import the ResumeBuilder component
 import AdminView from '@/views/AdminView.vue'
 
 const router = createRouter({
@@ -10,43 +10,30 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: AppHome,
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/login',
       name: 'login',
       component: Login,
     },
     {
-      path: '/builder',
-      name: 'resumeBuilder',
-      component: ResumeBuilder,
-      meta: { requiresAuth: true }
+      path: '/home',
+      name: 'home',
+      component: AppHome,
     },
     {
-      path: '/cohere',
+      path: '/builder', // New route for the ResumeBuilder page
+      name: 'resumeBuilder',
+      component: ResumeBuilder,
+    },
+    {
+      path: '/cohere', // New route for the ResumeBuilder page
       name: 'cohere',
       component: cohere,
-      meta: { requiresAuth: true }
     },
     {
       path: '/adminView',
       name: 'admin',
       component: AdminView,
-      meta: { requiresAuth: true }
     },
   ],
 })
-
-router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem('authToken') !== null;
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    next('/login');
-  } else {
-    next();
-  }
-});
 
 export default router

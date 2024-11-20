@@ -437,24 +437,24 @@
     @confirm-delete="deleteItem"
   />
   <!-- PDF Preview Modal -->
-<v-dialog v-model="pdfPreviewVisible" max-width="800px">
-  <v-card>
-    <v-card-title>PDF Preview</v-card-title>
-    <v-card-text>
-      <iframe
-        v-if="pdfDataUrl"
-        :src="pdfDataUrl"
-        width="100%"
-        height="600px"
-      ></iframe>
-    </v-card-text>
-    <v-card-actions>
-      <v-btn color="primary" text @click="pdfPreviewVisible = false">
-        Close
-      </v-btn>
-    </v-card-actions>
-  </v-card>
-</v-dialog>
+  <v-dialog v-model="pdfPreviewVisible" max-width="800px">
+    <v-card>
+      <v-card-title>PDF Preview</v-card-title>
+      <v-card-text>
+        <iframe
+          v-if="pdfDataUrl"
+          :src="pdfDataUrl"
+          width="100%"
+          height="600px"
+        ></iframe>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn color="primary" text @click="pdfPreviewVisible = false">
+          Close
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -505,7 +505,7 @@ export default {
   data() {
     return {
       pdfPreviewVisible: false,
-    pdfDataUrl: null,
+      pdfDataUrl: null,
       skills: [],
       education: [],
       links: [],
@@ -854,117 +854,212 @@ export default {
       this.awardsExpanded = !this.awardsExpanded
     },
     generateResume() {
-  // Generate the PDF and open the preview modal
-  const doc = this.generatePdf();
-  this.pdfDataUrl = doc.output('dataurlstring');
-  this.pdfPreviewVisible = true;
-},
+      // Generate the PDF and open the preview modal
+      const doc = this.generatePdf()
+      this.pdfDataUrl = doc.output('dataurlstring')
+      this.pdfPreviewVisible = true
+    },
 
-generatePdf() {
-  const doc = new jsPDF();
-  let yPosition = 20; // Initial Y position
+    generatePdf() {
+      const doc = new jsPDF()
+      let yPosition = 20
+      const leftMargin = 20
+      const pageWidth = 210 // A4 width in mm
 
-  // Header Section
-  doc.setFontSize(20);
-  doc.text(`${this.personalInfos[0]?.first_name} ${this.personalInfos[0]?.last_name}`, 10, yPosition);
-  yPosition += 10;
-  doc.setFontSize(12);
-  doc.text(`Location: ${this.personalInfos[0]?.address || "N/A"} | Phone: ${this.personalInfos[0]?.phone_number} | Email: ${this.personalInfos[0]?.email}`, 10, yPosition);
-  yPosition += 20;
-
-  // Professional Summary
-  if (this.personalInfos[0]?.summary) {
-    doc.setFontSize(16);
-    doc.text("Professional Summary", 10, yPosition);
-    yPosition += 10;
-    doc.setFontSize(12);
-    doc.text(this.personalInfos[0].summary, 10, yPosition, { maxWidth: 180 });
-    yPosition += 20;
-  }
-
-  // Education Section
-  if (this.education.length > 0) {
-    doc.setFontSize(16);
-    doc.text("Education", 10, yPosition);
-    yPosition += 10;
-    doc.setFontSize(12);
-    this.education.forEach(edu => {
-      doc.text(`${edu.degree} in ${edu.field_of_study}, ${edu.institution}`, 10, yPosition);
-      yPosition += 10;
-      doc.text(`Graduation Date: ${edu.graduationDate}`, 10, yPosition);
-      yPosition += 10;
-      if (edu.gpa) {
-        doc.text(`GPA: ${edu.gpa}`, 10, yPosition);
-        yPosition += 10;
+      // Helper functions for consistent styling
+      const addHeader = (text, y) => {
+        doc.setFont('helvetica', 'bold')
+        doc.setFontSize(12)
+        doc.setTextColor(0, 0, 0)
+        doc.text(text.toUpperCase(), leftMargin, y)
+        doc.line(leftMargin, y + 2, pageWidth - leftMargin, y + 2) // Add underline
+        return y + 10
       }
-      yPosition += 10;
-    });
-  }
 
-  // Experience Section
-  if (this.experiences.length > 0) {
-    doc.setFontSize(16);
-    doc.text("Professional Experience", 10, yPosition);
-    yPosition += 10;
-    doc.setFontSize(12);
-    this.experiences.forEach(exp => {
-      doc.text(`${exp.job_title} at ${exp.company_name}`, 10, yPosition);
-      yPosition += 10;
-      doc.text(`Location: ${exp.location} | Duration: ${exp.start_date} - ${exp.end_date || "Present"}`, 10, yPosition);
-      yPosition += 10;
-      doc.text(exp.responsibilities, 10, yPosition, { maxWidth: 180 });
-      yPosition += 20;
-    });
-  }
+      const addBulletPoint = (text, y) => {
+        doc.setFont('helvetica', 'normal')
+        doc.setFontSize(10)
+        doc.text('•', leftMargin, y)
+        doc.text(text, leftMargin + 5, y)
+        return y + 6
+      }
 
-  // Skills Section
-  if (this.skills.length > 0) {
-    doc.setFontSize(16);
-    doc.text("Skills", 10, yPosition);
-    yPosition += 10;
-    doc.setFontSize(12);
-    this.skills.forEach(skill => {
-      doc.text(`- ${skill.name}`, 10, yPosition);
-      yPosition += 10;
-    });
-    yPosition += 10;
-  }
+      // Name and Contact Header
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(16)
+      doc.text(
+        `${this.personalInfos[0]?.first_name} ${this.personalInfos[0]?.last_name}`,
+        pageWidth / 2,
+        yPosition,
+        { align: 'center' },
+      )
 
-  // Projects Section
-  if (this.projects.length > 0) {
-    doc.setFontSize(16);
-    doc.text("Projects", 10, yPosition);
-    yPosition += 10;
-    doc.setFontSize(12);
-    this.projects.forEach(project => {
-      doc.text(project.project_name, 10, yPosition);
-      yPosition += 10;
-      doc.text(`Role: ${project.role}`, 10, yPosition);
-      yPosition += 10;
-      doc.text(`Description: ${project.description}`, 10, yPosition, { maxWidth: 180 });
-      yPosition += 10;
-      doc.text(`Results: ${project.results}`, 10, yPosition);
-      yPosition += 20;
-    });
-  }
+      // Contact Info Line
+      yPosition += 10
+      doc.setFontSize(10)
+      doc.setFont('helvetica', 'normal')
+      const contactInfo = [
+        this.personalInfos[0]?.address,
+        this.personalInfos[0]?.phone_number,
+        this.personalInfos[0]?.email,
+      ]
+        .filter(Boolean)
+        .join(' | ')
+      doc.text(contactInfo, pageWidth / 2, yPosition, { align: 'center' })
 
-  // Awards Section
-  if (this.awards.length > 0) {
-    doc.setFontSize(16);
-    doc.text("Awards", 10, yPosition);
-    yPosition += 10;
-    doc.setFontSize(12);
-    this.awards.forEach(award => {
-      doc.text(`${award.title} (${award.year_Awarded})`, 10, yPosition);
-      yPosition += 10;
-      doc.text(award.description, 10, yPosition, { maxWidth: 180 });
-      yPosition += 20;
-    });
-  }
+      // Professional Summary
+      if (this.personalInfos[0]?.summary) {
+        yPosition += 15
+        yPosition = addHeader('PROFESSIONAL SUMMARY', yPosition)
+        doc.setFont('helvetica', 'normal')
+        doc.setFontSize(10)
+        const lines = doc.splitTextToSize(
+          this.personalInfos[0].summary,
+          pageWidth - 2 * leftMargin,
+        )
+        doc.text(lines, leftMargin, yPosition)
+        yPosition += lines.length * 6 + 10
+      }
 
-  // Return the generated PDF
-  return doc;
-},
+      // Education Section
+      if (this.education.length > 0) {
+        yPosition = addHeader('EDUCATION', yPosition)
+        this.education.forEach(edu => {
+          doc.setFont('helvetica', 'bold')
+          doc.setFontSize(11)
+          doc.text(
+            `${edu.institution}, ${edu.location || ''}`,
+            leftMargin,
+            yPosition,
+          )
+
+          yPosition += 6
+          doc.setFont('helvetica', 'italic')
+          doc.text(
+            `${edu.degree} in ${edu.field_of_study}`,
+            leftMargin,
+            yPosition,
+          )
+
+          // Add graduation date on the right
+          doc.setFont('helvetica', 'normal')
+          const dateText = `${edu.graduationDate}`
+          const dateWidth = doc.getTextWidth(dateText)
+          doc.text(dateText, pageWidth - leftMargin - dateWidth, yPosition)
+
+          if (edu.gpa) {
+            yPosition += 6
+            doc.text(`GPA: ${edu.gpa}`, leftMargin, yPosition)
+          }
+          yPosition += 10
+        })
+      }
+
+      // Professional Experience
+      if (this.experiences.length > 0) {
+        yPosition = addHeader('PROFESSIONAL EXPERIENCE', yPosition)
+        this.experiences.forEach(exp => {
+          doc.setFont('helvetica', 'bold')
+          doc.setFontSize(11)
+          doc.text(
+            `${exp.company_name}, ${exp.location || ''}`,
+            leftMargin,
+            yPosition,
+          )
+
+          // Add date range on the right
+          const dateText = `${exp.start_date} - ${exp.end_date || 'Present'}`
+          const dateWidth = doc.getTextWidth(dateText)
+          doc.setFont('helvetica', 'normal')
+          doc.text(dateText, pageWidth - leftMargin - dateWidth, yPosition)
+
+          yPosition += 6
+          doc.setFont('helvetica', 'italic')
+          doc.text(exp.job_title, leftMargin, yPosition)
+          yPosition += 6
+
+          // Split responsibilities into bullet points
+          const responsibilities = exp.responsibilities
+            .split('. ')
+            .filter(Boolean)
+          responsibilities.forEach(resp => {
+            if (resp.trim()) {
+              yPosition = addBulletPoint(resp.trim(), yPosition)
+            }
+          })
+          yPosition += 6
+        })
+      }
+
+      // Skills Section
+      if (this.skills.length > 0) {
+        yPosition = addHeader('SKILLS', yPosition)
+        const skillsList = this.skills.map(skill => skill.name).join(' • ')
+        const skillsLines = doc.splitTextToSize(
+          skillsList,
+          pageWidth - 2 * leftMargin,
+        )
+        doc.setFont('helvetica', 'normal')
+        doc.setFontSize(10)
+        doc.text(skillsLines, leftMargin, yPosition)
+        yPosition += skillsLines.length * 6 + 10
+      }
+
+      // Projects Section
+      if (this.projects.length > 0) {
+        yPosition = addHeader('PROJECTS', yPosition)
+        this.projects.forEach(project => {
+          doc.setFont('helvetica', 'bold')
+          doc.setFontSize(11)
+          doc.text(project.project_name, leftMargin, yPosition)
+          yPosition += 6
+
+          if (project.role) {
+            doc.setFont('helvetica', 'italic')
+            doc.setFontSize(10)
+            doc.text(`Role: ${project.role}`, leftMargin, yPosition)
+            yPosition += 6
+          }
+
+          if (project.description) {
+            const descLines = doc.splitTextToSize(
+              project.description,
+              pageWidth - 2 * leftMargin,
+            )
+            doc.setFont('helvetica', 'normal')
+            doc.text(descLines, leftMargin, yPosition)
+            yPosition += descLines.length * 6 + 6
+          }
+        })
+      }
+
+      // Awards Section
+      if (this.awards.length > 0) {
+        yPosition = addHeader('AWARDS & ACHIEVEMENTS', yPosition)
+        this.awards.forEach(award => {
+          doc.setFont('helvetica', 'bold')
+          doc.setFontSize(10)
+          doc.text(
+            `${award.title} (${award.year_Awarded})`,
+            leftMargin,
+            yPosition,
+          )
+          yPosition += 6
+
+          if (award.description) {
+            doc.setFont('helvetica', 'normal')
+            const descLines = doc.splitTextToSize(
+              award.description,
+              pageWidth - 2 * leftMargin,
+            )
+            doc.text(descLines, leftMargin, yPosition)
+            yPosition += descLines.length * 6 + 6
+          }
+        })
+      }
+
+      return doc
+    },
   },
 }
 </script>

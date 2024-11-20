@@ -20,6 +20,7 @@ const router = useRouter()
 const user = ref({})
 const fName = ref('')
 const lName = ref('')
+const role = ref('')
 const errorMessage = ref('')
 
 // Initialize Google Login
@@ -63,9 +64,15 @@ const handleCredentialResponse = async response => {
 
     fName.value = user.value.fName
     lName.value = user.value.lName
+    role.value = user.value.role
 
-    // Navigate to home page on successful login
-    router.push({ name: 'home' })
+    console.log(user.value)
+    if (role.value === 'student')
+      // Navigate to home page on successful login
+      router.push({ name: 'home' })
+    else if (role.value === 'admin')
+      // Navigate to admin dashboard on successful login
+      router.push({ name: 'admin' })
   } catch (error) {
     console.error('Login failed', error)
     errorMessage.value = 'Login failed. Please try again.'

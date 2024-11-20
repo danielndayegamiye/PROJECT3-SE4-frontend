@@ -39,7 +39,7 @@
                 :title="`${personalInfo.first_name.trim()} ${personalInfo.last_name.trim()}, ${personalInfo.email.trim()}, ${personalInfo.phone_number.trim()}`"
               >
                 <template v-slot:append
-                  ><v-icon class="icon mr-4">mdi-pencil</v-icon
+                  ><v-icon class="icon mr-4" @click="openPersonalInfoModal(personalInfo)">mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
                     @click="
@@ -64,6 +64,7 @@
       <!-- Modal for Personal Info -->
       <PersonalInfoModal
         :showModal="personalInfoModalVisible"
+        :personalInfo="selectedPersonalInfo"
         @close-modal="closePersonalInfoModal"
       />
 
@@ -536,6 +537,8 @@ export default {
       deleteService: '',
       awardsExpanded: false,
       activeSection: '',
+      selectedPersonalInfo: null,
+      
     }
   },
   methods: {
@@ -761,11 +764,20 @@ export default {
 
       this.closeDeleteModal()
     },
-    openPersonalInfoModal() {
-      this.personalInfoModalVisible = true
+    openPersonalInfoModal(personalInfo = null) {
+      if (personalInfo) {
+        // Editing existing personal info
+        this.selectedPersonalInfo = { ...personalInfo };
+        console.log(`Opening for editing ${this.personalInfo}`)
+      } else {
+        // Adding new personal info
+        this.selectedPersonalInfo = null;
+      }
+      this.personalInfoModalVisible = true;
     },
     closePersonalInfoModal() {
       this.personalInfoModalVisible = false
+      this.selectedPersonalInfo = null;
       this.fetchPersonalInfos()
     },
     openSkillsModal() {

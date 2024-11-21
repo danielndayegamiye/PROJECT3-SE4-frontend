@@ -28,7 +28,6 @@ const loginWithGoogle = () => {
   console.log('Initializing Google Login')
 
   const client = import.meta.env.VITE_CLIENT_ID // Use the environment variable
-  console.log(client)
 
   window.handleCredentialResponse = handleCredentialResponse
 
@@ -66,13 +65,13 @@ const handleCredentialResponse = async response => {
     lName.value = user.value.lName
     role.value = user.value.role
 
-    console.log(user.value)
-    if (role.value === 'student')
-      // Navigate to home page on successful login
+    if (role.value === 'student') {
       router.push({ name: 'home' })
-    else if (role.value === 'admin')
-      // Navigate to admin dashboard on successful login
+    } else if (role.value === 'admin') {
       router.push({ name: 'admin' })
+    } else {
+      console.error('Unexpected role:', role.value)
+    }
   } catch (error) {
     console.error('Login failed', error)
     errorMessage.value = 'Login failed. Please try again.'

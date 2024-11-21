@@ -56,15 +56,39 @@ export default {
   name: 'PersonalInfoModal',
   props: {
     showModal: Boolean,
+    personalInfo: {
+      type: Object,
+      default: null,
+    },
   },
   data() {
     return {
+      id: null,
       first_name: '',
       last_name: '',
       email: '',
       phone_number: '',
       address: '',
     }
+  },
+  watch: {
+    personalInfo: {
+      immediate: true,
+      handler(newVal) {
+        if (newVal) {
+          // Populate fields for editing
+          this.id = newVal.id || null;
+          this.first_name = newVal.first_name || '';
+          this.last_name = newVal.last_name || '';
+          this.email = newVal.email || '';
+          this.phone_number = newVal.phone_number || '';
+          this.address = newVal.address || '';
+        } else {
+          // Reset fields for adding
+          this.resetFields();
+        }
+      },
+    },
   },
   methods: {
     closeModal() {
@@ -83,27 +107,45 @@ export default {
         this.first_name.trim() &&
         this.last_name.trim() &&
         this.phone_number.trim() &&
-        this.address.trim() &&
-        this.email.trim()
-      ) {
+        this.email.trim(),
+        this.address.trim()
+      ){
         try {
-          const userId = Utils.getStore('user').userId
-          const personalInfoData = {
-            first_name: this.first_name,
-            last_name: this.last_name,
-            phone_number: this.phone_number,
-            address: this.address,
-            email: this.email,
-            userId,
+          if (this.id) {
+            // Update existing personal info
+            const personalInfoData = {
+              id: this.id,
+              first_name: this.first_name,
+              last_name: this.last_name,
+              phone_number: this.phone_number,
+              address: this.address,
+              email: this.email,
+            };
+            await PersonalInfoServices.updatePersonalInfo(personalInfoData);
+            this.$emit('personalInfo-updated'); // Notify parent about the update
+          } else {
+            // Create new personal info
+            const userId = Utils.getStore('user').userId;
+            const personalInfoData = {
+              first_name: this.first_name,
+              last_name: this.last_name,
+              phone_number: this.phone_number,
+              address: this.address,
+              email: this.email,
+              userId,
+            };
+            await PersonalInfoServices.createPersonalInfo(personalInfoData);
+            this.$emit('personalInfo-added'); // Notify parent about the addition
           }
-          await PersonalInfoServices.createPersonalInfo(personalInfoData)
-          this.closeModal() // Close the modal on success
-          this.$emit('personalInfo-added') // Emit an event to notify the parent component
-        } catch (error) {
-          console.error('Failed to add personal info:', error)
-        }
-      }
-    },
+
+            this.closeModal(); // Close the modal on success
+          } catch (error) {
+            console.error('Failed to save personal info:', error);
+          }
+  }
+},
+
+
   },
 }
 </script>

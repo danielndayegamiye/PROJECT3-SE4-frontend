@@ -12,6 +12,9 @@ const SkillServices = {
   getSkillsByUserId(userId) {
     return apiClient.get(`/skill/${userId}`)
   },
+  updateSkill(skillData) {
+    return apiClient.put(`/skill/${skillData.id}`, skillData);
+  },
 }
 
 export default SkillServices

@@ -26,13 +26,37 @@ export default {
   name: 'SkillsModal',
   props: {
     showModal: Boolean,
+    skill: {
+      type: Object,
+      default: null,
+    },
   },
   data() {
     return {
+      skillId: null,
       newSkill: '', // Holds the value of the skill entered by the user
     }
   },
+  watch: {
+    skill: {
+      immediate: true,
+      handler(newVal) {
+        if (newVal) {
+          // Populate fields for editing
+          this.skillId = newVal.id || null;
+          this.newSkill = newVal.name || '';
+        } else {
+          // Reset fields for adding
+          this.resetFields();
+        }
+      },
+    },
+  },
   methods: {
+    resetFields() {
+      this.skillId = null;
+      this.newSkill = '';
+    },
     closeModal() {
       this.$emit('close-modal')
       this.newSkill = '' // Clear the skill input field
@@ -40,17 +64,33 @@ export default {
     async saveSkill() {
       if (this.newSkill.trim()) {
         try {
-          const userId = Utils.getStore('user').userId // Retrieve userId from Utils
-          const skillData = { name: this.newSkill, userId } // Add userId to skillData
+          const userId = Utils.getStore('user').userId; // Retrieve userId from Utils
 
-          await SkillServices.createSkill(skillData) // Call createSkill with skillData
-          this.closeModal() // Close the modal on success
-          this.$emit('skill-added') // Emit an event to notify the parent component
+          if (this.skillId) {
+            // Update existing skill
+            const skillData = {
+              id: this.skillId, // Include the ID for the update
+              name: this.newSkill,
+              userId,
+            };
+
+            await SkillServices.updateSkill(skillData); // Call updateSkill with skillData
+            this.$emit('skill-updated'); // Emit an event to notify the parent component
+          } else {
+            // Create new skill
+            const skillData = { name: this.newSkill, userId };
+
+            await SkillServices.createSkill(skillData); // Call createSkill with skillData
+            this.$emit('skill-added'); // Emit an event to notify the parent component
+          }
+
+          this.closeModal(); // Close the modal on success
         } catch (error) {
-          console.error('Failed to add skill:', error)
+          console.error('Failed to save skill:', error);
         }
       }
     },
+
   },
 }
 </script>

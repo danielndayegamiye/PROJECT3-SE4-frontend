@@ -7,6 +7,6 @@ export default {
     return apiClient.post('authorize', code)
   },
   logoutUser(token) {
-    return apiClient.post('logout', token)
+    return apiClient.post('logout', { token }) // Wrap the token in an object
   },
 }

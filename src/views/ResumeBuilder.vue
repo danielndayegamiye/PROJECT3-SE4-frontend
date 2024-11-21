@@ -560,7 +560,6 @@ export default {
           ...skill,
           props: { appendIcon: 'mdi-delete' },
         }))
-        console.log('Here: ' + this.skills)
       } catch (error) {
         console.error('Failed to fetch skills:', error)
       }
@@ -573,7 +572,6 @@ export default {
           ...edu,
           props: { appendIcon: 'mdi-delete' },
         }))
-        console.log('Fetched Education:', this.education)
       } catch (error) {
         console.error('Failed to fetch education:', error)
       }
@@ -588,7 +586,6 @@ export default {
             appendIcon: 'mdi-delete',
           },
         }))
-        console.log('Fetched Projects:', this.projects)
       } catch (error) {
         console.error('Failed to fetch projects:', error)
       }
@@ -602,7 +599,6 @@ export default {
           ...link,
           props: { appendIcon: 'mdi-delete' },
         }))
-        console.log('Fetched links:', this.links)
       } catch (error) {
         console.error('Failed to fetch link:', error)
       }
@@ -615,7 +611,6 @@ export default {
           ...interest,
           props: { appendIcon: 'mdi-delete' },
         }))
-        console.log('Fetched Interest:', this.interests)
       } catch (error) {
         console.error('Failed to fetch interest:', error)
       }
@@ -629,7 +624,6 @@ export default {
           ...personalInfo,
           props: { appendIcon: 'mdi-delete' },
         }))
-        console.log('Fetched Personal Info:', this.personalInfos)
       } catch (error) {
         console.error('Failed to fetch personal info:', error)
       }
@@ -642,7 +636,6 @@ export default {
           ...experience,
           props: { appendIcon: 'mdi-delete' },
         }))
-        console.log('Fetched Experiences:', this.experiences)
       } catch (error) {
         console.error('Failed to fetch experiences:', error)
       }
@@ -655,7 +648,6 @@ export default {
           ...award,
           props: { appendIcon: 'mdi-delete' },
         }))
-        console.log('Fetched Awards:', this.awards)
       } catch (error) {
         console.error('Failed to fetch awards:', error)
       }
@@ -664,9 +656,6 @@ export default {
       try {
         await PersonalInfoServices.deletePersonalInfo(personalInfoId)
         this.fetchPersonalInfos()
-        console.log(
-          `Personal Info with id ${personalInfoId} deleted successfully.`,
-        )
       } catch (error) {
         console.error('Failed to delete personal info:', error)
       }
@@ -675,7 +664,6 @@ export default {
       try {
         await ExperienceServices.deleteExperience(experienceId)
         this.fetchExperiences()
-        console.log(`Experience with id ${experienceId} deleted successfully.`)
       } catch (error) {
         console.error('Failed to delete experience:', error)
       }
@@ -684,7 +672,6 @@ export default {
       try {
         await SkillServices.deleteSkill(skillId)
         this.fetchSkills()
-        console.log(`Skill with id ${skillId} deleted successfully.`)
       } catch (error) {
         console.error('Failed to delete skill:', error)
       }
@@ -693,7 +680,6 @@ export default {
       try {
         await EducationServices.deleteEducation(educationId)
         this.fetchEducation()
-        console.log(`Education with id ${educationId} deleted successfully.`)
       } catch (error) {
         console.error('Failed to delete education:', error)
       }
@@ -702,7 +688,6 @@ export default {
       try {
         await InterestServices.deleteInterest(interestId)
         this.fetchInterest()
-        console.log(`Interest with id ${interestId} deleted successfully.`)
       } catch (error) {
         console.error('Failed to delete interest:', error)
       }
@@ -711,7 +696,6 @@ export default {
       try {
         await LinkServices.deleteLink(linkId)
         this.fetchLink()
-        console.log(`Link with id ${linkId} deleted successfully.`)
       } catch (error) {
         console.error('Failed to delete link:', error)
       }
@@ -720,7 +704,6 @@ export default {
       try {
         await ProjectsServices.deleteProject(projectId)
         this.fetchProjects()
-        console.log(`Project with id ${projectId} deleted successfully.`)
       } catch (error) {
         console.error('Failed to delete project:', error)
       }
@@ -729,7 +712,6 @@ export default {
       try {
         await AwardsServices.deleteAward(awardId)
         this.fetchAwards()
-        console.log(`Award with id ${awardId} deleted successfully.`)
       } catch (error) {
         console.error('Failed to delete award:', error)
       }

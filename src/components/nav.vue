@@ -17,13 +17,14 @@
 
     <!-- Dropdown Menu -->
     <div v-if="dropdownVisible" class="dropdown-menu">
-
       <button @click="logout">Logout</button>
     </div>
   </nav>
 </template>
 
 <script>
+import authServices from '@/services/authServices'
+
 export default {
   name: 'NavBar',
   data() {
@@ -41,7 +42,20 @@ export default {
     },
     logout() {
       // Clear tokens in localStorage
-      localStorage.removeItem('authToken')
+      const userString = localStorage.getItem('user')
+      if (userString) {
+        const user = JSON.parse(userString) // Safely parse the string
+        if (user && user.token) {
+          let token = user.token
+          localStorage.removeItem('user')
+          authServices.logoutUser(token) // Use the token for logout
+        } else {
+          console.error('User object is invalid or token is missing.')
+        }
+      } else {
+        console.error('No user found in localStorage.')
+      }
+
       // Redirect to login page after logout
       this.$router.push('/')
     },

@@ -92,7 +92,7 @@
                 :title="skill.name"
               >
                 <template v-slot:append
-                  ><v-icon class="icon mr-4">mdi-pencil</v-icon
+                  ><v-icon class="icon mr-4" @click="openSkillsModal(skill)">mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
                     @click="
@@ -113,6 +113,7 @@
       <!-- Modal for Skills -->
       <SkillsModal
         :showModal="skillsModalVisible"
+        :skill="selectedSkill"
         @close-modal="closeSkillsModal"
       />
 
@@ -538,7 +539,8 @@ export default {
       awardsExpanded: false,
       activeSection: '',
       selectedPersonalInfo: null,
-      
+      selectedSkill: null,
+
     }
   },
   methods: {
@@ -780,11 +782,17 @@ export default {
       this.selectedPersonalInfo = null;
       this.fetchPersonalInfos()
     },
-    openSkillsModal() {
-      this.skillsModalVisible = true
+    openSkillsModal(skill = null) {
+      if(skill){
+        this.selectedSkill = {...skill};
+      } else {
+        this.selectedSkill = null;
+      }
+      this.skillsModalVisible = true;
     },
     closeSkillsModal() {
       this.skillsModalVisible = false
+      this.selectedSkill = null;
       this.fetchSkills()
     },
     openEducationModal() {

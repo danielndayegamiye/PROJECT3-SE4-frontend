@@ -12,6 +12,9 @@ const EducationServices = {
   getEducationByUserId(userId) {
     return apiClient.get(`/education/${userId}`)
   },
+  updateEducation(educationData) {
+    return apiClient.put(`/education/${educationData.id}`, educationData);
+  },
 }
 
 export default EducationServices

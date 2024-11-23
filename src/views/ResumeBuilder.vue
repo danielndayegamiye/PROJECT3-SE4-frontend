@@ -142,7 +142,7 @@
                 :title="`${edu.degree.trim()}, ${edu.institution.trim()}`"
               >
                 <template v-slot:append
-                  ><v-icon class="icon mr-4">mdi-pencil</v-icon
+                  ><v-icon class="icon mr-4" @click="openEducationModal(edu)">mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
                     @click="
@@ -166,6 +166,7 @@
 
       <EducationModal
         :showModal="educationModalVisible"
+        :education="selectedEducation"
         @close-modal="closeEducationModal"
       />
 
@@ -540,6 +541,7 @@ export default {
       activeSection: '',
       selectedPersonalInfo: null,
       selectedSkill: null,
+      selectedEducation: null,
 
     }
   },
@@ -795,11 +797,18 @@ export default {
       this.selectedSkill = null;
       this.fetchSkills()
     },
-    openEducationModal() {
-      this.educationModalVisible = true
+    openEducationModal(education = null) {
+      if(education){
+        this.selectedEducation = {...education};
+        console.log(`Opening for editing: ${this.education}`)
+      } else {
+        this.selectedEducation = null;
+      }
+      this.educationModalVisible = true;
     },
     closeEducationModal() {
       this.educationModalVisible = false
+      this.selectedEducation = null;
       this.fetchEducation()
     },
     openInterestsModal() {

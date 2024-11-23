@@ -35,34 +35,75 @@ export default {
   name: 'InterestsModal',
   props: {
     showModal: Boolean,
+    interest: {
+      type: Object,
+      default: null,
+    }
   },
   data() {
     return {
+      id: null,
       careerPosition: '',
       description: '',
     }
   },
+  watch: {
+    interest: {
+      immediate: true,
+      handler(newVal) {
+        console.log("Received interest prop:", newVal)
+        if (newVal) {
+          // Populate fields for editing
+          
+          this.id = newVal.id || null;
+          this.careerPosition = newVal.careerPosition || '';
+          this.description = newVal.description || '';
+        } else {
+          // Reset fields for adding
+          this.resetFields();
+        }
+      },
+    },
+  },
   methods: {
+    resetFields(){
+      this.id = null,
+      this.careerPosition = '',
+      this.description = ''
+    },
     closeModal() {
       this.$emit('close-modal')
     },
     async saveInterest() {
       if (this.careerPosition.trim() && this.description.trim()) {
         try {
-          const userId = Utils.getStore('user').userId
+          const userId = Utils.getStore('user').userId;
           const interestData = {
+            id: this.id, // Include `id` for updates
             careerPosition: this.careerPosition,
             description: this.description,
             userId,
+          };
+
+          if (this.id) {
+            // Update existing interest
+            console.log('Updating interest:', interestData);
+            await InterestServices.updateInterests(interestData); // Call the update service
+            this.$emit('interest-updated'); // Notify parent component
+          } else {
+            // Create new interest
+            console.log('Creating new interest:', interestData);
+            await InterestServices.createInterest(interestData); // Call the create service
+            this.$emit('interest-added'); // Notify parent component
           }
-          await InterestServices.createInterest(interestData)
-          this.closeModal() // Close the modal on success
-          this.$emit('interest-added') // Emit an event to notify the parent component
+
+          this.closeModal(); // Close the modal on success
         } catch (error) {
-          console.error('Failed to add interest:', error)
+          console.error('Failed to save interest:', error);
         }
       }
     },
+
   },
 }
 </script>

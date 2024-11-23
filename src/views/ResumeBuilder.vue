@@ -194,7 +194,7 @@
                 :title="interest.careerPosition"
               >
                 <template v-slot:append
-                  ><v-icon class="icon mr-4">mdi-pencil</v-icon
+                  ><v-icon class="icon mr-4" @click="openInterestsModal(interest)">mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
                     @click="
@@ -218,6 +218,7 @@
 
       <InterestsModal
         :showModal="interestsModalVisible"
+        :interest="selectedInterest"
         @close-modal="closeInterestsModal"
       ></InterestsModal>
 
@@ -542,6 +543,7 @@ export default {
       selectedPersonalInfo: null,
       selectedSkill: null,
       selectedEducation: null,
+      selectedInterest: null,
 
     }
   },
@@ -811,11 +813,17 @@ export default {
       this.selectedEducation = null;
       this.fetchEducation()
     },
-    openInterestsModal() {
-      this.interestsModalVisible = true
+    openInterestsModal(interest = null) {
+      if(interest){
+        this.selectedInterest = {...interest};
+      } else {
+        this.selectedInterest = null;
+      }
+      this.interestsModalVisible = true;
     },
     closeInterestsModal() {
       this.interestsModalVisible = false
+      this.selectedInterest = null
       this.fetchInterest()
     },
     openLinksModal() {

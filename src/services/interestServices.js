@@ -12,6 +12,9 @@ const InterestServices = {
   getInterestsByUserId(userId) {
     return apiClient.get(`/interest/${userId}`)
   },
+  updateInterests(interestsData) {
+    return apiClient.put(`/interest/${interestsData.id}`, interestsData);
+  },
 }
 
 export default InterestServices

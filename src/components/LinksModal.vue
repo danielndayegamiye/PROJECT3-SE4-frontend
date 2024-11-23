@@ -7,7 +7,7 @@
           <v-text-field v-model="type" label="Name" class="text-field">
           </v-text-field>
           <v-text-field
-            v-model="link"
+            v-model="linkUrl"
             label="URL"
             class="text-field"
           ></v-text-field>
@@ -31,29 +31,63 @@ export default {
   name: 'LinksModal',
   props: {
     showModal: Boolean,
+    link: {
+      type: Object,
+      default: null,
+    }
   },
   data() {
     return {
+      id: null,
       type: '',
-      link: '',
+      linkUrl: '',
     }
   },
+  watch: {
+    link: {
+      immediate: true,
+      handler(newVal) {
+        console.log("Received links prop:", newVal)
+        if (newVal) {
+          this.id = newVal.id || null;
+          this.linkUrl = newVal.link || '';
+          this.type = newVal.type || '';
+        } else {
+          // Reset fields for adding
+          this.resetFields();
+        }
+      },
+    },
+  },
   methods: {
+    resetFields(){
+      this.id = null,
+      this.type = '',
+      this.linkUrl = ''
+    },
     closeModal() {
       this.$emit('close-modal')
     },
     async saveLink() {
-      if (this.type.trim() && this.link.trim()) {
+      if (this.type.trim() && this.linkUrl.trim()) {
         try {
           const userId = Utils.getStore('user').userId
           const linkData = {
+            id: this.id,
             type: this.type,
-            link: this.link,
+            link: this.linkUrl,
             userId,
           }
-          await LinkServices.createLink(linkData)
+          
+          if(this.id){
+            await LinkServices.updateLink(linkData);
+            this.$emit('link-updated')
+          } else{
+            await LinkServices.createLink(linkData)
+            this.$emit('link-added') // Emit an event to notify the parent component
+          }
           this.closeModal() // Close the modal on success
-          this.$emit('link-added') // Emit an event to notify the parent component
+
         } catch (error) {
           console.error('Failed to add link:', error)
         }

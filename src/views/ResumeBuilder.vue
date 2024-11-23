@@ -246,7 +246,7 @@
                 :title="link.type"
               >
                 <template v-slot:append
-                  ><v-icon class="icon mr-4">mdi-pencil</v-icon
+                  ><v-icon class="icon mr-4" @click="openLinksModal(link)">mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
                     @click="
@@ -266,6 +266,7 @@
 
       <LinksModal
         :showModal="linksModalVisible"
+        :link="selectedLink"
         @close-modal="closeLinksModal"
       ></LinksModal>
 
@@ -544,6 +545,7 @@ export default {
       selectedSkill: null,
       selectedEducation: null,
       selectedInterest: null,
+      selectedLink: null,
 
     }
   },
@@ -826,11 +828,17 @@ export default {
       this.selectedInterest = null
       this.fetchInterest()
     },
-    openLinksModal() {
-      this.linksModalVisible = true
+    openLinksModal(link = null) {
+      if(link){
+        this.selectedLink = {...link};
+      } else {
+        this.selectedLink = null;
+      }
+      this.linksModalVisible = true;
     },
     closeLinksModal() {
       this.linksModalVisible = false
+      this.selectedLink = null;
       this.fetchLink()
     },
     openProjectsModal() {

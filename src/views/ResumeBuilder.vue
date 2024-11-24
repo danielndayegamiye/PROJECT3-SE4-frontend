@@ -401,7 +401,7 @@
                 :title="`${award.title.trim()} - ${award.year_Awarded}`"
               >
                 <template v-slot:append
-                  ><v-icon class="icon mr-4">mdi-pencil</v-icon
+                  ><v-icon class="icon mr-4" @click="openAwardsModal(award)">mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
                     @click="
@@ -426,6 +426,7 @@
       <!-- Modal for Awards -->
       <AwardsModal
         :showModal="awardsModalVisible"
+        :award="selectedAward"
         @close-modal="closeAwardsModal"
       ></AwardsModal>
     </div>
@@ -551,7 +552,7 @@ export default {
       selectedLink: null,
       selectedExperience: null,
       selectedProject: null,
-
+      selectedAward: null,
     }
   },
   methods: {
@@ -872,11 +873,17 @@ export default {
       this.selectedExperience = null;
       this.fetchExperiences()
     },
-    openAwardsModal() {
-      this.awardsModalVisible = true
+    openAwardsModal(award = null) {
+      if(award){
+        this.selectedAward = {...award}          
+      } else {
+        this.selectedAward = null
+      }
+      this.awardsModalVisible = true;
     },
     closeAwardsModal() {
       this.awardsModalVisible = false
+      this.selectedAward = null
       this.fetchAwards()
     },
     openDeleteModal(itemId, itemName, deleteService) {

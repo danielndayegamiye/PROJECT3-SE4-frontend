@@ -294,7 +294,7 @@
                 :title="`${experience.job_title.trim()}, ${experience.company_name.trim()}, ${experience.start_date.trim()} - ${experience.end_date.trim()}`"
               >
                 <template v-slot:append
-                  ><v-icon class="icon mr-4">mdi-pencil</v-icon
+                  ><v-icon class="icon mr-4" @click="openExperienceModal(experience)">mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
                     @click="
@@ -319,7 +319,9 @@
       <!-- Modal for Experience -->
       <ExperienceModal
         :show-modal="experienceModalVisible"
+        :experience="selectedExperience"
         @close-modal="closeExperienceModal"
+        
       ></ExperienceModal>
 
       <!-- Projects Section -->
@@ -546,6 +548,7 @@ export default {
       selectedEducation: null,
       selectedInterest: null,
       selectedLink: null,
+      selectedExperience: null,
 
     }
   },
@@ -848,11 +851,17 @@ export default {
       this.projectsModalVisible = false
       this.fetchProjects()
     },
-    openExperienceModal() {
-      this.experienceModalVisible = true
+    openExperienceModal(experience = null) {
+      if(experience){
+        this.selectedExperience = {...experience}
+      } else {
+        this.selectedExperience = null;
+      }
+      this.experienceModalVisible = true;
     },
     closeExperienceModal() {
       this.experienceModalVisible = false
+      this.selectedExperience = null;
       this.fetchExperiences()
     },
     openAwardsModal() {

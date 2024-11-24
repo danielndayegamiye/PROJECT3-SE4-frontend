@@ -10,6 +10,9 @@ const ExperienceServices = {
   getExperienceByUserId(userId) {
     return apiClient.get(`/experience/${userId}`)
   },
+  updateExperience(experienceData) {
+    return apiClient.put(`/experience/${experienceData.id}`, experienceData);
+  },
 }
 
 export default ExperienceServices

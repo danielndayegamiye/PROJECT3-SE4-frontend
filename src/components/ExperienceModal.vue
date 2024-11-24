@@ -61,9 +61,14 @@ export default {
   name: 'ExperienceModal',
   props: {
     showModal: Boolean,
+    experience: {
+      type: Object,
+      default: null,
+    }
   },
   data() {
     return {
+      id: null,
       job_title: '',
       company_name: '',
       location: '',
@@ -72,12 +77,35 @@ export default {
       end_date: '',
     }
   },
+  watch: {
+    experience: {
+      immediate: true,
+      handler(newVal) {
+        console.log("Received experience prop:", newVal)
+        if (newVal) {
+          // Populate fields for editing
+          
+          this.id = newVal.id || null;
+          this.job_title = newVal.job_title || '';
+          this.company_name = newVal.company_name || '';
+          this.location = newVal.location || '';
+          this.responsibilities = newVal.responsibilities || '';
+          this.start_date = newVal.start_date || '';
+          this.end_date = newVal.end_date || '';
+        } else {
+          // Reset fields for adding
+          this.resetFields();
+        }
+      },
+    },
+  },
   methods: {
     closeModal() {
       this.$emit('close-modal')
       this.resetFields()
     },
     resetFields() {
+      this.id = null,
       this.job_title = ''
       this.company_name = ''
       this.location = ''
@@ -96,19 +124,34 @@ export default {
       ) {
         try {
           const userId = Utils.getStore('user').userId
-          const experienceData = {
-            job_title: this.job_title,
-            company_name: this.company_name,
-            location: this.location,
-            responsibilities: this.responsibilities,
-            start_date: this.start_date,
-            end_date: this.end_date,
-            userId,
-          }
 
-          await ExperienceServices.createExperience(experienceData)
+          if(this.id){
+            const experienceData = {
+              id: this.id,
+              job_title: this.job_title,
+              company_name: this.company_name,
+              location: this.location,
+              responsibilities: this.responsibilities,
+              start_date: this.start_date,
+              end_date: this.end_date,
+              userId,
+            }
+            await ExperienceServices.updateExperience(experienceData)
+            this.$emit('experience-updated') // Emit an event to notify the parent component
+          } else {
+            const experienceData = {
+              job_title: this.job_title,
+              company_name: this.company_name,
+              location: this.location,
+              responsibilities: this.responsibilities,
+              start_date: this.start_date,
+              end_date: this.end_date,
+              userId,
+            }
+            await ExperienceServices.createExperience(experienceData)
+            this.$emit('experience-added') // Emit an event to notify the parent component
+          }
           this.closeModal() // Close the modal on success
-          this.$emit('experience-added') // Emit an event to notify the parent component
         } catch (error) {
           console.error('Failed to add experience:', error)
         }

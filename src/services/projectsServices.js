@@ -12,6 +12,9 @@ const ProjectsServices = {
   getProjectsByUserId(userId) {
     return apiClient.get(`/projects/${userId}`)
   },
+  updateProject(projectsData) {
+    return apiClient.put(`/projects/${projectsData.id}`, projectsData);
+  },
 }
 
 export default ProjectsServices

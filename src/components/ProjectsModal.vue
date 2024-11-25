@@ -28,34 +28,81 @@ export default {
   name: 'ProjectsModal',
   props: {
     showModal: Boolean,
+    project: {
+      type: Object,
+      default: null,
+    }
   },
   data() {
     return {
+      id: null,
       project_name: '',
       description: '',
       role: '',
       results: ''
     }
   },
+  watch: {
+    project: {
+      immediate: true,
+      handler(newVal) {
+        console.log("Received project:",newVal)
+        if (newVal) {
+          // Populate fields for editing
+          
+          this.id = newVal.id || null;
+          this.project_name = newVal.project_name || '';
+          this.description = newVal.description || '';
+          this.role = newVal.role || '';
+          this.results = newVal.results || '';
+        } else {
+          // Reset fields for adding
+          this.resetFields();
+        }
+      },
+    },
+  },
   methods: {
     closeModal() {
       this.$emit('close-modal');
+    },
+    resetFields(){
+      this.id = null,
+      this.project_name = ''
+      this.description = ''
+      this.role = ''
+      this.results = ''
     },
     async saveProjects() {
       if (this.project_name.trim() && this.description.trim() && this.role.trim() && this.results.trim()) {
         try {
           const userId = Utils.getStore('user').userId;
-          const projectsData = {
-            project_name: this.project_name,
-            description: this.description,
-            role: this.role,
-            results: this.results,
-            userId
-          };
+          if(this.id){
+            const projectsData = {
+              id: this.id,
+              project_name: this.project_name,
+              description: this.description,
+              role: this.role,
+              results: this.results,
+              userId
+            };
 
-          await ProjectsServices.createProjects(projectsData);
+            await ProjectsServices.updateProject(projectsData);
+            this.$emit('projects-updated'); // Emit an event to notify the parent component
+          } else {
+            const projectsData = {
+              project_name: this.project_name,
+              description: this.description,
+              role: this.role,
+              results: this.results,
+              userId
+            };
+
+            await ProjectsServices.createProjects(projectsData);
+            this.$emit('projects-added'); // Emit an event to notify the parent component
+          }
           this.closeModal(); // Close the modal on success
-          this.$emit('projects-added'); // Emit an event to notify the parent component
+
         } catch (error) {
           console.error('Failed to add projects:', error);
         }

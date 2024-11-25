@@ -349,7 +349,7 @@
                 :title="project.project_name.trim()"
               >
                 <template v-slot:append
-                  ><v-icon class="icon mr-4">mdi-pencil</v-icon
+                  ><v-icon class="icon mr-4" @click="openProjectsModal(project)">mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
                     @click="
@@ -373,6 +373,7 @@
 
       <ProjectsModal
         :showModal="projectsModalVisible"
+        :project="selectedProject"
         @close-modal="closeProjectsModal"
       />
 
@@ -549,6 +550,7 @@ export default {
       selectedInterest: null,
       selectedLink: null,
       selectedExperience: null,
+      selectedProject: null,
 
     }
   },
@@ -826,11 +828,17 @@ export default {
       this.selectedLink = null;
       this.fetchLink()
     },
-    openProjectsModal() {
-      this.projectsModalVisible = true
+    openProjectsModal(project = null) {
+      if(project) {
+        this.selectedProject = {...project}
+      } else {
+        this.selectedProject = null
+      }
+      this.projectsModalVisible = true;
     },
     closeProjectsModal() {
       this.projectsModalVisible = false
+      this.selectedProject = null;
       this.fetchProjects()
     },
     openExperienceModal(experience = null) {

@@ -49,9 +49,14 @@ export default {
   name: 'EducationModal',
   props: {
     showModal: Boolean,
+    education: {
+      type: Object,
+      default: null,
+    }
   },
   data() {
     return {
+      id: null,
       institution: '',
       degree: '',
       graduationDate: '',
@@ -59,31 +64,87 @@ export default {
       relevantWork: ''
     }
   },
+  watch: {
+    education: {
+      immediate: true,
+      handler(newVal) {
+        console.log("Received education prop:", newVal)
+        if (newVal) {
+          // Populate fields for editing
+          
+          this.id = newVal.id || null;
+          this.institution = newVal.institution || '';
+          this.degree = newVal.degree || '';
+          this.graduationDate = newVal.graduationDate || '';
+          this.gpa = newVal.gpa || '';
+          this.relevantWork = newVal.relevantWork || '';
+        } else {
+          // Reset fields for adding
+          this.resetFields();
+        }
+      },
+    },
+  },
   methods: {
+    resetFields() {
+      this.id = null,
+      this.institution = ''
+      this.degree = ''
+      this.graduationDate = ''
+      this.gpa = ''
+      this.relevantWork = ''
+    },
     closeModal() {
       this.$emit('close-modal');
     },
     async saveEducation() {
-      if (this.institution.trim() && this.degree.trim() && this.graduationDate.trim() && this.gpa.trim() && this.relevantWork.trim()) {
+      if (
+        this.institution.trim() &&
+        this.degree.trim() &&
+        this.graduationDate.trim() &&
+        this.gpa.trim() &&
+        this.relevantWork.trim()
+      ) {
         try {
+          console.log("Current ID: ", this.id)
           const userId = Utils.getStore('user').userId;
-          const educationData = {
-            institution: this.institution,
-            degree: this.degree,
-            graduationDate: this.graduationDate,
-            gpa: this.gpa,
-            relevantWork: this.relevantWork,
-            userId
-          };
 
-          await EducationServices.createEducation(educationData);
+          if (this.id) {
+            // Update existing education
+            const educationData = {
+              id: this.id, // Include the ID for the update
+              institution: this.institution,
+              degree: this.degree,
+              graduationDate: this.graduationDate,
+              gpa: this.gpa,
+              relevantWork: this.relevantWork,
+              userId,
+            };
+            console.log("updating education")
+            await EducationServices.updateEducation(educationData); // Call updateEducation with educationData
+            this.$emit('education-updated'); // Emit an event to notify the parent component
+          } else {
+            // Create new education
+            const educationData = {
+              institution: this.institution,
+              degree: this.degree,
+              graduationDate: this.graduationDate,
+              gpa: this.gpa,
+              relevantWork: this.relevantWork,
+              userId,
+            };
+
+            await EducationServices.createEducation(educationData); // Call createEducation with educationData
+            this.$emit('education-added'); // Emit an event to notify the parent component
+          }
+
           this.closeModal(); // Close the modal on success
-          this.$emit('education-added'); // Emit an event to notify the parent component
         } catch (error) {
-          console.error('Failed to add education:', error);
+          console.error('Failed to save education:', error);
         }
       }
     },
+
   }
 }
 </script>

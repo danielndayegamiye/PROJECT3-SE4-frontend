@@ -12,6 +12,9 @@ const LinkServices = {
   getLinksByUserId(userId) {
     return apiClient.get(`/links/${userId}`)
   },
+  updateLink(linkData){
+    return apiClient.put(`/links/${linkData.id}`, linkData)
+  }
 }
 
 export default LinkServices

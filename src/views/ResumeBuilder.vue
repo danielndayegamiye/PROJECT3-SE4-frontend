@@ -142,7 +142,7 @@
                 :title="`${edu.degree.trim()}, ${edu.institution.trim()}`"
               >
                 <template v-slot:append
-                  ><v-icon class="icon mr-4">mdi-pencil</v-icon
+                  ><v-icon class="icon mr-4" @click="openEducationModal(edu)">mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
                     @click="
@@ -166,6 +166,7 @@
 
       <EducationModal
         :showModal="educationModalVisible"
+        :education="selectedEducation"
         @close-modal="closeEducationModal"
       />
 
@@ -193,7 +194,7 @@
                 :title="interest.careerPosition"
               >
                 <template v-slot:append
-                  ><v-icon class="icon mr-4">mdi-pencil</v-icon
+                  ><v-icon class="icon mr-4" @click="openInterestsModal(interest)">mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
                     @click="
@@ -217,6 +218,7 @@
 
       <InterestsModal
         :showModal="interestsModalVisible"
+        :interest="selectedInterest"
         @close-modal="closeInterestsModal"
       ></InterestsModal>
 
@@ -244,7 +246,7 @@
                 :title="link.type"
               >
                 <template v-slot:append
-                  ><v-icon class="icon mr-4">mdi-pencil</v-icon
+                  ><v-icon class="icon mr-4" @click="openLinksModal(link)">mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
                     @click="
@@ -264,6 +266,7 @@
 
       <LinksModal
         :showModal="linksModalVisible"
+        :link="selectedLink"
         @close-modal="closeLinksModal"
       ></LinksModal>
 
@@ -291,7 +294,7 @@
                 :title="`${experience.job_title.trim()}, ${experience.company_name.trim()}, ${experience.start_date.trim()} - ${experience.end_date.trim()}`"
               >
                 <template v-slot:append
-                  ><v-icon class="icon mr-4">mdi-pencil</v-icon
+                  ><v-icon class="icon mr-4" @click="openExperienceModal(experience)">mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
                     @click="
@@ -316,7 +319,9 @@
       <!-- Modal for Experience -->
       <ExperienceModal
         :show-modal="experienceModalVisible"
+        :experience="selectedExperience"
         @close-modal="closeExperienceModal"
+        
       ></ExperienceModal>
 
       <!-- Projects Section -->
@@ -540,6 +545,10 @@ export default {
       activeSection: '',
       selectedPersonalInfo: null,
       selectedSkill: null,
+      selectedEducation: null,
+      selectedInterest: null,
+      selectedLink: null,
+      selectedExperience: null,
 
     }
   },
@@ -777,25 +786,44 @@ export default {
       this.selectedSkill = null;
       this.fetchSkills()
     },
-    openEducationModal() {
-      this.educationModalVisible = true
+    openEducationModal(education = null) {
+      if(education){
+        this.selectedEducation = {...education};
+        console.log(`Opening for editing: ${this.education}`)
+      } else {
+        this.selectedEducation = null;
+      }
+      this.educationModalVisible = true;
     },
     closeEducationModal() {
       this.educationModalVisible = false
+      this.selectedEducation = null;
       this.fetchEducation()
     },
-    openInterestsModal() {
-      this.interestsModalVisible = true
+    openInterestsModal(interest = null) {
+      if(interest){
+        this.selectedInterest = {...interest};
+      } else {
+        this.selectedInterest = null;
+      }
+      this.interestsModalVisible = true;
     },
     closeInterestsModal() {
       this.interestsModalVisible = false
+      this.selectedInterest = null
       this.fetchInterest()
     },
-    openLinksModal() {
-      this.linksModalVisible = true
+    openLinksModal(link = null) {
+      if(link){
+        this.selectedLink = {...link};
+      } else {
+        this.selectedLink = null;
+      }
+      this.linksModalVisible = true;
     },
     closeLinksModal() {
       this.linksModalVisible = false
+      this.selectedLink = null;
       this.fetchLink()
     },
     openProjectsModal() {
@@ -805,11 +833,17 @@ export default {
       this.projectsModalVisible = false
       this.fetchProjects()
     },
-    openExperienceModal() {
-      this.experienceModalVisible = true
+    openExperienceModal(experience = null) {
+      if(experience){
+        this.selectedExperience = {...experience}
+      } else {
+        this.selectedExperience = null;
+      }
+      this.experienceModalVisible = true;
     },
     closeExperienceModal() {
       this.experienceModalVisible = false
+      this.selectedExperience = null;
       this.fetchExperiences()
     },
     openAwardsModal() {

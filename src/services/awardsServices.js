@@ -11,8 +11,8 @@ const AwardServices = {
     return apiClient.get(`/awards/${userId}`)
   },
   // Update an existing award by ID
-  updateAward(awardId, awardData) {
-    return apiClient.put(`/awards/${awardId}`, awardData)
+  updateAward(awardData) {
+    return apiClient.put(`/awards/${awardData.id}`, awardData);
   },
   // Delete an award by ID
   deleteAward(id) {

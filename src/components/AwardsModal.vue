@@ -9,7 +9,7 @@
             label="Title"
             outlined
             class="text-field"
-            v-model="award.title"
+            v-model="title"
             required
           ></v-text-field>
 
@@ -18,7 +18,7 @@
             label="Description"
             outlined
             class="text-field"
-            v-model="award.description"
+            v-model="description"
             required
           ></v-text-field>
 
@@ -27,7 +27,7 @@
             label="Year"
             outlined
             class="text-field"
-            v-model="award.year_Awarded"
+            v-model="year_Awarded"
             required
           ></v-text-field>
         </v-form>
@@ -50,41 +50,82 @@ export default {
   name: 'AwardsModal',
   props: {
     showModal: Boolean,
+    award: {
+      type: Object,
+      default: null,
+    }
   },
   data() {
     return {
-      award: {
-        title: '',
-        description: '',
-        year_Awarded: '',
-      },
+      id: null,
+      title: '',
+      description: '',
+      year_Awarded: '',
     }
   },
+  watch: {
+    award: {
+      immediate: true,
+      handler(newVal) {
+        console.log("Received award prop:", newVal)
+        if (newVal) {
+          // Populate fields for editing
+          this.id = newVal.id || null;
+          this.title = newVal.title || '';
+          this.description = newVal.description || '';
+          this.year_Awarded = newVal.year_Awarded || '';
+        } else {
+          // Reset fields for adding
+          this.resetFields();
+        }
+      },
+    },
+  },
   methods: {
+    resetFields(){
+      this.id = null
+      this.title = ''
+      this.description = ''
+      this.year_Awarded = ''
+    },
     closeModal() {
       this.$emit('close-modal')
-      this.resetForm() // Clear the form when the modal is closed
     },
     async saveAward() {
       if (
-        this.award.title.trim() &&
-        this.award.description.trim() &&
-        this.award.year_Awarded.trim()
+        this.title.trim() &&
+        this.description.trim()
       ) {
         try {
           const userId = Utils.getStore('user').userId // Retrieve userId from Utils
-          const awardData = { ...this.award, userId } // Include userId in award data
 
-          await AwardServices.createAward(awardData) // Call createAward from AwardServices
-          this.$emit('award-added') // Notify parent component of new award
+          if(this.id){
+            const awardData = {
+              id: this.id,
+              title: this.title,
+              description: this.description,
+              year_Awarded: this.year_Awarded,
+              userId
+            }
+            await AwardServices.updateAward(awardData) // Call createAward from AwardServices
+            this.$emit('award-updated') // Notify parent component of new award
+          } else {
+            const awardData = {
+              title: this.title,
+              description: this.description,
+              year_Awarded: this.year_Awarded,
+              userId
+            }
+            await AwardServices.createAward(awardData) // Call createAward from AwardServices
+            this.$emit('award-created') // Notify parent component of new award
+          }
+          
           this.closeModal() // Close the modal on success
+
         } catch (error) {
           console.error('Failed to add award:', error) // Error handling
         }
       }
-    },
-    resetForm() {
-      this.award = { title: '', description: '', year_Awarded: '' }
     },
   },
 }

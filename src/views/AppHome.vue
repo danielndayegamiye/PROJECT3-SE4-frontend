@@ -111,7 +111,7 @@ export default {
     fetchResumes() {
       const userId = Utils.getStore('user').userId
       apiClient
-        .get('/resumes/' + userId)
+        .get('/resumes/user/' + userId)
         .then(response => {
           this.resumes = response.data
         })

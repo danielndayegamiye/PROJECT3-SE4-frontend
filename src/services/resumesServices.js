@@ -10,6 +10,9 @@ const ResumesServices = {
   getAllResumes() {
     return apiClient.get('/resumes')
   },
+  getResume(id) {
+    return apiClient.get(`/resumes/${id}`)
+  },
   getUser(id) {
     return apiClient.get(`/user/${id}`)
   },

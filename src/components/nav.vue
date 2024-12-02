@@ -17,51 +17,52 @@
 
     <!-- Dropdown Menu -->
     <div v-if="dropdownVisible" class="dropdown-menu">
+      <button @click="goToUserManagement">User Management</button>
       <button @click="logout">Logout</button>
     </div>
   </nav>
 </template>
 
 <script>
-import authServices from '@/services/authServices'
+import authServices from '@/services/authServices';
 
 export default {
   name: 'NavBar',
   data() {
     return {
       dropdownVisible: false,
-    }
+    };
   },
   methods: {
     toggleDropdown() {
-      this.dropdownVisible = !this.dropdownVisible
+      this.dropdownVisible = !this.dropdownVisible;
     },
-    myInfo() {
-      // Placeholder function for "My Info"
-      console.log('My Info clicked')
+    goToUserManagement() {
+      this.$router.push('/user-management');
     },
     logout() {
       // Clear tokens in localStorage
-      const userString = localStorage.getItem('user')
+      const userString = localStorage.getItem('user');
       if (userString) {
-        const user = JSON.parse(userString) // Safely parse the string
+        const user = JSON.parse(userString); // Safely parse the string
         if (user && user.token) {
-          let token = user.token
-          localStorage.removeItem('user')
-          authServices.logoutUser(token) // Use the token for logout
+          const token = user.token;
+          localStorage.removeItem('user');
+          authServices.logoutUser(token); // Use the token for logout
         } else {
-          console.error('User object is invalid or token is missing.')
+          console.error('User object is invalid or token is missing.');
         }
       } else {
-        console.error('No user found in localStorage.')
+        console.error('No user found in localStorage.');
       }
 
       // Redirect to login page after logout
-      this.$router.push('/')
+      this.$router.push('/');
     },
   },
-}
+};
 </script>
+
 
 <style scoped>
 .navbar {

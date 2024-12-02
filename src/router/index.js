@@ -4,6 +4,7 @@ import AppHome from '@/views/AppHome.vue'
 import Cohere from '@/views/Cohere.vue'
 import ResumeBuilder from '@/views/ResumeBuilder.vue'
 import AdminView from '@/views/AdminView.vue'
+import UserManagement from '@/views/UserManagement.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -37,6 +38,13 @@ const router = createRouter({
       component: AdminView,
       meta: { requiresAuth: true, requiresAdmin: true }, // Example for role-based protection
     },
+    {
+      path: '/user-management',
+      name: 'UserManagement',
+      component: UserManagement,
+      meta: {requiresAuth: true, requiresAdmin: true}
+    },
+    
   ],
 })
 
@@ -59,17 +67,22 @@ function isAdmin() {
 
 // Global navigation guard
 router.beforeEach((to, from, next) => {
-  const admin = isAdmin()
+  const admin = isAdmin();
+  console.log('Navigating to:', to.name);
+  console.log('Is admin:', admin);
+
   if (to.meta.requiresAuth && !isAuthenticated()) {
-    next('/') // Redirect to login if not authenticated
+    console.log('Not authenticated, redirecting to login...');
+    next('/'); // Redirect to login if not authenticated
   } else if (to.meta.requiresAdmin && !admin) {
-    next('/home') // Redirect non-admin users to the home page
-  } else if (admin && to.name !== 'admin') {
-    // Prevent admins from accessing non-admin routes
-    next('/adminView')
+    console.log('Not an admin, redirecting to home...');
+    next('/home'); // Redirect non-admin users to the home page
   } else {
-    next() // Allow navigation
+    // Allow admin to navigate to any route with requiresAdmin: true
+    console.log('Navigation allowed.');
+    next();
   }
-})
+});
+
 
 export default router

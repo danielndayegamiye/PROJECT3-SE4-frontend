@@ -39,7 +39,10 @@
                 :title="`${personalInfo.first_name.trim()} ${personalInfo.last_name.trim()}, ${personalInfo.email.trim()}, ${personalInfo.phone_number.trim()}`"
               >
                 <template v-slot:append
-                  ><v-icon class="icon mr-4" @click="openPersonalInfoModal(personalInfo)">mdi-pencil</v-icon
+                  ><v-icon
+                    class="icon mr-4"
+                    @click="openPersonalInfoModal(personalInfo)"
+                    >mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
                     @click="
@@ -53,7 +56,9 @@
                   ></template
                 >
                 <template v-slot:prepend
-                  ><v-checkbox-btn></v-checkbox-btn
+                  ><v-checkbox-btn
+                    v-model="personalInfo.selected"
+                  ></v-checkbox-btn
                 ></template>
               </v-list-item>
             </v-list>
@@ -92,7 +97,8 @@
                 :title="skill.name"
               >
                 <template v-slot:append
-                  ><v-icon class="icon mr-4" @click="openSkillsModal(skill)">mdi-pencil</v-icon
+                  ><v-icon class="icon mr-4" @click="openSkillsModal(skill)"
+                    >mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
                     @click="
@@ -102,7 +108,7 @@
                   ></template
                 >
                 <template v-slot:prepend
-                  ><v-checkbox-btn></v-checkbox-btn
+                  ><v-checkbox-btn v-model="skill.selected"></v-checkbox-btn
                 ></template>
               </v-list-item>
             </v-list>
@@ -142,7 +148,8 @@
                 :title="`${edu.degree.trim()}, ${edu.institution.trim()}`"
               >
                 <template v-slot:append
-                  ><v-icon class="icon mr-4" @click="openEducationModal(edu)">mdi-pencil</v-icon
+                  ><v-icon class="icon mr-4" @click="openEducationModal(edu)"
+                    >mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
                     @click="
@@ -156,7 +163,7 @@
                   ></template
                 >
                 <template v-slot:prepend
-                  ><v-checkbox-btn></v-checkbox-btn
+                  ><v-checkbox-btn v-model="edu.selected"></v-checkbox-btn
                 ></template>
               </v-list-item>
             </v-list>
@@ -194,7 +201,10 @@
                 :title="interest.careerPosition"
               >
                 <template v-slot:append
-                  ><v-icon class="icon mr-4" @click="openInterestsModal(interest)">mdi-pencil</v-icon
+                  ><v-icon
+                    class="icon mr-4"
+                    @click="openInterestsModal(interest)"
+                    >mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
                     @click="
@@ -208,7 +218,7 @@
                   ></template
                 >
                 <template v-slot:prepend
-                  ><v-checkbox-btn></v-checkbox-btn
+                  ><v-checkbox-btn v-model="interest.selected"></v-checkbox-btn
                 ></template>
               </v-list-item>
             </v-list>
@@ -246,7 +256,8 @@
                 :title="link.type"
               >
                 <template v-slot:append
-                  ><v-icon class="icon mr-4" @click="openLinksModal(link)">mdi-pencil</v-icon
+                  ><v-icon class="icon mr-4" @click="openLinksModal(link)"
+                    >mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
                     @click="
@@ -256,7 +267,7 @@
                   ></template
                 >
                 <template v-slot:prepend
-                  ><v-checkbox-btn></v-checkbox-btn
+                  ><v-checkbox-btn v-model="link.selected"></v-checkbox-btn
                 ></template>
               </v-list-item>
             </v-list>
@@ -294,7 +305,10 @@
                 :title="`${experience.job_title.trim()}, ${experience.company_name.trim()}, ${experience.start_date.trim()} - ${experience.end_date.trim()}`"
               >
                 <template v-slot:append
-                  ><v-icon class="icon mr-4" @click="openExperienceModal(experience)">mdi-pencil</v-icon
+                  ><v-icon
+                    class="icon mr-4"
+                    @click="openExperienceModal(experience)"
+                    >mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
                     @click="
@@ -308,7 +322,9 @@
                   ></template
                 >
                 <template v-slot:prepend
-                  ><v-checkbox-btn></v-checkbox-btn
+                  ><v-checkbox-btn
+                    v-model="experience.selected"
+                  ></v-checkbox-btn
                 ></template>
               </v-list-item>
             </v-list>
@@ -321,7 +337,6 @@
         :show-modal="experienceModalVisible"
         :experience="selectedExperience"
         @close-modal="closeExperienceModal"
-        
       ></ExperienceModal>
 
       <!-- Projects Section -->
@@ -349,7 +364,8 @@
                 :title="project.project_name.trim()"
               >
                 <template v-slot:append
-                  ><v-icon class="icon mr-4" @click="openProjectsModal(project)">mdi-pencil</v-icon
+                  ><v-icon class="icon mr-4" @click="openProjectsModal(project)"
+                    >mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
                     @click="
@@ -363,7 +379,7 @@
                   ></template
                 >
                 <template v-slot:prepend
-                  ><v-checkbox-btn></v-checkbox-btn
+                  ><v-checkbox-btn v-model="project.selected"></v-checkbox-btn
                 ></template>
               </v-list-item>
             </v-list>
@@ -401,7 +417,8 @@
                 :title="`${award.title.trim()} - ${award.year_Awarded}`"
               >
                 <template v-slot:append
-                  ><v-icon class="icon mr-4" @click="openAwardsModal(award)">mdi-pencil</v-icon
+                  ><v-icon class="icon mr-4" @click="openAwardsModal(award)"
+                    >mdi-pencil</v-icon
                   ><v-icon
                     class="icon"
                     @click="
@@ -415,7 +432,7 @@
                   ></template
                 >
                 <template v-slot:prepend
-                  ><v-checkbox-btn></v-checkbox-btn
+                  ><v-checkbox-btn v-model="award.selected"></v-checkbox-btn
                 ></template>
               </v-list-item>
             </v-list>
@@ -431,9 +448,45 @@
       ></AwardsModal>
     </div>
 
-    <!-- Generate Resume Button -->
-    <div class="generate-resume">
-      <v-btn color="primary" @click="generateResume">Generate Resume</v-btn>
+    <div>
+      <!-- Generate Resume Button -->
+      <div class="generate-resume">
+        <v-btn color="primary" @click="openResumeForm">Generate Resume</v-btn>
+      </div>
+
+      <!-- Modal/Form for Resume Title and Description -->
+      <v-dialog v-model="resumeFormVisible" max-width="500">
+        <v-card>
+          <v-card-title>Resume Details</v-card-title>
+          <v-card-text>
+            <v-form ref="resumeForm" v-model="resumeFormValid">
+              <v-text-field
+                label="Title"
+                v-model="resumeDetails.title"
+                :rules="[rules.required]"
+                required
+              ></v-text-field>
+              <v-textarea
+                label="Description"
+                v-model="resumeDetails.description"
+                :rules="[rules.required]"
+                rows="3"
+              ></v-textarea>
+            </v-form>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="primary"
+              :disabled="!resumeFormValid"
+              @click="saveResume"
+            >
+              Save and Generate
+            </v-btn>
+            <v-btn text @click="resumeFormVisible = false">Cancel</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </div>
   </div>
 
@@ -458,9 +511,7 @@
         ></iframe>
       </v-card-text>
       <v-card-actions>
-        <v-btn color="primary" text @click="pdfPreviewVisible = false">
-          Close
-        </v-btn>
+        <v-btn color="primary" text @click="closePreview"> Close </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -487,6 +538,7 @@ import AwardsModal from '@/components/AwardsModal.vue'
 import ExperienceServices from '@/services/experienceServices'
 import DeleteConfirm from '@/components/DeleteConfirm.vue'
 import AwardsServices from '@/services/awardsServices'
+import ResumesServices from '@/services/resumesServices'
 
 export default {
   components: {
@@ -553,9 +605,82 @@ export default {
       selectedExperience: null,
       selectedProject: null,
       selectedAward: null,
+      resumeFormVisible: false, // Controls modal visibility
+      resumeFormValid: false, // Form validation state
+      resumeDetails: {
+        title: '',
+        description: '',
+        contactIds: [], // Array to store selected contact IDs
+        skillIds: [], // Array to store selected skill IDs
+        experienceIds: [],
+        educationIds: [],
+        linkIds: [],
+        interestIds: [],
+        projectIds: [],
+        awardIds: [],
+        userId: Utils.getStore('user').userId,
+      },
+      rules: {
+        required: value => !!value || 'This field is required.',
+      },
     }
   },
   methods: {
+    closePreview() {
+      // Close the PDF preview
+      this.pdfPreviewVisible = false
+
+      // Navigate to the home route
+      this.$router.push('/home')
+    },
+    openResumeForm() {
+      this.resumeFormVisible = true
+      // Populate selected IDs dynamically based on user choices
+      this.resumeDetails.contactIds = this.getSelectedIds('personalInfos')
+      this.resumeDetails.skillIds = this.getSelectedIds('skills')
+      this.resumeDetails.experienceIds = this.getSelectedIds('experiences')
+      this.resumeDetails.educationIds = this.getSelectedIds('education')
+      this.resumeDetails.linkIds = this.getSelectedIds('links')
+      this.resumeDetails.interestIds = this.getSelectedIds('interests')
+      this.resumeDetails.projectIds = this.getSelectedIds('projects')
+      this.resumeDetails.awardIds = this.getSelectedIds('awards')
+    },
+    getSelectedIds(section) {
+      // General function to get selected IDs for any section
+      return this[section]
+        .filter(item => item.selected) // Check if the item is selected (you need to track `selected` state)
+        .map(item => item.id) // Return the IDs of selected items
+    },
+    async saveResume() {
+      try {
+        // Call the generatePDF method and get the PDF as a blob
+        const pdfBlob = await this.generateResume()
+
+        // Convert Blob to Base64
+        const pdfBase64 = await new Promise((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onloadend = () => resolve(reader.result.split(',')[1]) // Extract Base64 portion
+          reader.onerror = reject
+          reader.readAsDataURL(pdfBlob) // Convert to Base64
+        })
+
+        // Add the Base64 PDF to resumeDetails to send to the backend
+        const resumeData = {
+          ...this.resumeDetails,
+          pdfBlob: pdfBase64, // Add Base64 encoded PDF to payload
+        }
+
+        // Send title, description, and the PDF blob to the backend
+        await ResumesServices.createResume(resumeData)
+
+        // Close the form/modal
+        this.resumeFormVisible = false
+        this.$toast.success('Resume saved successfully!')
+      } catch (error) {
+        console.error('Error saving resume:', error)
+        this.$toast.error('Failed to save resume. Please try again.')
+      }
+    },
     openModal(sectionName) {
       this.activeSection = sectionName
       this.modalVisible = true
@@ -570,6 +695,7 @@ export default {
         const response = await SkillServices.getSkillsByUserId(userId)
         this.skills = response.data.map(skill => ({
           ...skill,
+          selected: false, // Add the selected property
           props: { appendIcon: 'mdi-delete' },
         }))
       } catch (error) {
@@ -582,6 +708,7 @@ export default {
         const response = await EducationServices.getEducationByUserId(userId)
         this.education = response.data.map(edu => ({
           ...edu,
+          selected: false,
           props: { appendIcon: 'mdi-delete' },
         }))
       } catch (error) {
@@ -596,6 +723,7 @@ export default {
           ...project,
           props: {
             appendIcon: 'mdi-delete',
+            selected: false,
           },
         }))
       } catch (error) {
@@ -610,6 +738,7 @@ export default {
         this.links = response.data.map(link => ({
           ...link,
           props: { appendIcon: 'mdi-delete' },
+          selected: false,
         }))
       } catch (error) {
         console.error('Failed to fetch link:', error)
@@ -622,6 +751,7 @@ export default {
         this.interests = response.data.map(interest => ({
           ...interest,
           props: { appendIcon: 'mdi-delete' },
+          selected: false,
         }))
       } catch (error) {
         console.error('Failed to fetch interest:', error)
@@ -635,6 +765,7 @@ export default {
         this.personalInfos = response.data.map(personalInfo => ({
           ...personalInfo,
           props: { appendIcon: 'mdi-delete' },
+          selected: false, // Add the selected property
         }))
       } catch (error) {
         console.error('Failed to fetch personal info:', error)
@@ -647,6 +778,7 @@ export default {
         this.experiences = response.data.map(experience => ({
           ...experience,
           props: { appendIcon: 'mdi-delete' },
+          selected: false,
         }))
       } catch (error) {
         console.error('Failed to fetch experiences:', error)
@@ -659,6 +791,7 @@ export default {
         this.awards = response.data.map(award => ({
           ...award,
           props: { appendIcon: 'mdi-delete' },
+          selected: false,
         }))
       } catch (error) {
         console.error('Failed to fetch awards:', error)
@@ -763,53 +896,53 @@ export default {
     openPersonalInfoModal(personalInfo = null) {
       if (personalInfo) {
         // Editing existing personal info
-        this.selectedPersonalInfo = { ...personalInfo };
+        this.selectedPersonalInfo = { ...personalInfo }
         console.log(`Opening for editing ${this.personalInfo}`)
       } else {
         // Adding new personal info
-        this.selectedPersonalInfo = null;
+        this.selectedPersonalInfo = null
       }
-      this.personalInfoModalVisible = true;
+      this.personalInfoModalVisible = true
     },
     closePersonalInfoModal() {
       this.personalInfoModalVisible = false
-      this.selectedPersonalInfo = null;
+      this.selectedPersonalInfo = null
       this.fetchPersonalInfos()
     },
     openSkillsModal(skill = null) {
-      if(skill){
-        this.selectedSkill = {...skill};
+      if (skill) {
+        this.selectedSkill = { ...skill }
       } else {
-        this.selectedSkill = null;
+        this.selectedSkill = null
       }
-      this.skillsModalVisible = true;
+      this.skillsModalVisible = true
     },
     closeSkillsModal() {
       this.skillsModalVisible = false
-      this.selectedSkill = null;
+      this.selectedSkill = null
       this.fetchSkills()
     },
     openEducationModal(education = null) {
-      if(education){
-        this.selectedEducation = {...education};
+      if (education) {
+        this.selectedEducation = { ...education }
         console.log(`Opening for editing: ${this.education}`)
       } else {
-        this.selectedEducation = null;
+        this.selectedEducation = null
       }
-      this.educationModalVisible = true;
+      this.educationModalVisible = true
     },
     closeEducationModal() {
       this.educationModalVisible = false
-      this.selectedEducation = null;
+      this.selectedEducation = null
       this.fetchEducation()
     },
     openInterestsModal(interest = null) {
-      if(interest){
-        this.selectedInterest = {...interest};
+      if (interest) {
+        this.selectedInterest = { ...interest }
       } else {
-        this.selectedInterest = null;
+        this.selectedInterest = null
       }
-      this.interestsModalVisible = true;
+      this.interestsModalVisible = true
     },
     closeInterestsModal() {
       this.interestsModalVisible = false
@@ -817,51 +950,51 @@ export default {
       this.fetchInterest()
     },
     openLinksModal(link = null) {
-      if(link){
-        this.selectedLink = {...link};
+      if (link) {
+        this.selectedLink = { ...link }
       } else {
-        this.selectedLink = null;
+        this.selectedLink = null
       }
-      this.linksModalVisible = true;
+      this.linksModalVisible = true
     },
     closeLinksModal() {
       this.linksModalVisible = false
-      this.selectedLink = null;
+      this.selectedLink = null
       this.fetchLink()
     },
     openProjectsModal(project = null) {
-      if(project) {
-        this.selectedProject = {...project}
+      if (project) {
+        this.selectedProject = { ...project }
       } else {
         this.selectedProject = null
       }
-      this.projectsModalVisible = true;
+      this.projectsModalVisible = true
     },
     closeProjectsModal() {
       this.projectsModalVisible = false
-      this.selectedProject = null;
+      this.selectedProject = null
       this.fetchProjects()
     },
     openExperienceModal(experience = null) {
-      if(experience){
-        this.selectedExperience = {...experience}
+      if (experience) {
+        this.selectedExperience = { ...experience }
       } else {
-        this.selectedExperience = null;
+        this.selectedExperience = null
       }
-      this.experienceModalVisible = true;
+      this.experienceModalVisible = true
     },
     closeExperienceModal() {
       this.experienceModalVisible = false
-      this.selectedExperience = null;
+      this.selectedExperience = null
       this.fetchExperiences()
     },
     openAwardsModal(award = null) {
-      if(award){
-        this.selectedAward = {...award}          
+      if (award) {
+        this.selectedAward = { ...award }
       } else {
         this.selectedAward = null
       }
-      this.awardsModalVisible = true;
+      this.awardsModalVisible = true
     },
     closeAwardsModal() {
       this.awardsModalVisible = false
@@ -905,10 +1038,20 @@ export default {
       this.awardsExpanded = !this.awardsExpanded
     },
     generateResume() {
-      // Generate the PDF and open the preview modal
-      const doc = this.generatePdf()
-      this.pdfDataUrl = doc.output('dataurlstring')
-      this.pdfPreviewVisible = true
+      return new Promise((resolve, reject) => {
+        try {
+          // Generate the PDF and open the preview modal
+          const doc = this.generatePdf()
+          this.pdfDataUrl = doc.output('dataurlstring')
+          this.pdfPreviewVisible = true
+          // After generating the content, create a Blob
+          const pdfBlob = doc.output('blob') // Returns the PDF as a Blob
+
+          resolve(pdfBlob)
+        } catch (error) {
+          reject(error)
+        }
+      })
     },
 
     generatePdf() {
@@ -934,48 +1077,60 @@ export default {
         doc.text(text, leftMargin + 5, y)
         return y + 6
       }
-
-      // Name and Contact Header
-      doc.setFont('helvetica', 'bold')
-      doc.setFontSize(16)
-      doc.text(
-        `${this.personalInfos[0]?.first_name} ${this.personalInfos[0]?.last_name}`,
-        pageWidth / 2,
-        yPosition,
-        { align: 'center' },
+      const selectedPersonalInfos = this.personalInfos.filter(
+        info => info.selected,
       )
-
-      // Contact Info Line
-      yPosition += 10
-      doc.setFontSize(10)
-      doc.setFont('helvetica', 'normal')
-      const contactInfo = [
-        this.personalInfos[0]?.address,
-        this.personalInfos[0]?.phone_number,
-        this.personalInfos[0]?.email,
-      ]
-        .filter(Boolean)
-        .join(' | ')
-      doc.text(contactInfo, pageWidth / 2, yPosition, { align: 'center' })
-
-      // Professional Summary
-      if (this.personalInfos[0]?.summary) {
-        yPosition += 15
-        yPosition = addHeader('PROFESSIONAL SUMMARY', yPosition)
-        doc.setFont('helvetica', 'normal')
-        doc.setFontSize(10)
-        const lines = doc.splitTextToSize(
-          this.personalInfos[0].summary,
-          pageWidth - 2 * leftMargin,
-        )
-        doc.text(lines, leftMargin, yPosition)
-        yPosition += lines.length * 6 + 10
+      if (selectedPersonalInfos.length === 0) {
+        alert('No contact info selected for the resume.')
+        return
       }
+      // Generate PDF content based on selected items
+      selectedPersonalInfos.forEach(info => {
+        // Name and Contact Header
+        doc.setFont('helvetica', 'bold')
+        doc.setFontSize(16)
+        doc.text(
+          `${info.first_name} ${info.last_name}`,
+          pageWidth / 2,
+          yPosition,
+          { align: 'center' },
+        )
 
+        // Contact Info Line
+        yPosition += 10
+        doc.setFontSize(10)
+        doc.setFont('helvetica', 'normal')
+        const contactInfo = [info.address, info.phone_number, info.email]
+          .filter(Boolean)
+          .join(' | ')
+        doc.text(contactInfo, pageWidth / 2, yPosition, { align: 'center' })
+
+        // Professional Summary
+        if (info.summary) {
+          yPosition += 15
+          yPosition = addHeader('PROFESSIONAL SUMMARY', yPosition)
+          doc.setFont('helvetica', 'normal')
+          doc.setFontSize(10)
+          const lines = doc.splitTextToSize(
+            info.summary,
+            pageWidth - 2 * leftMargin,
+          )
+          doc.text(lines, leftMargin, yPosition)
+          yPosition += lines.length * 6 + 10
+        }
+      })
       // Education Section
       if (this.education.length > 0) {
+        const selectedEducation = this.education.filter(edu => edu.selected)
+
+        if (selectedEducation.length === 0) {
+          alert('No education items selected for the resume.')
+          return
+        }
+
         yPosition = addHeader('EDUCATION', yPosition)
-        this.education.forEach(edu => {
+
+        selectedEducation.forEach(edu => {
           doc.setFont('helvetica', 'bold')
           doc.setFontSize(11)
           doc.text(
@@ -986,11 +1141,7 @@ export default {
 
           yPosition += 6
           doc.setFont('helvetica', 'italic')
-          doc.text(
-            `${edu.degree} in ${edu.field_of_study}`,
-            leftMargin,
-            yPosition,
-          )
+          doc.text(`${edu.degree}`, leftMargin, yPosition)
 
           // Add graduation date on the right
           doc.setFont('helvetica', 'normal')
@@ -1006,10 +1157,18 @@ export default {
         })
       }
 
-      // Professional Experience
+      // Professional Experience Section
       if (this.experiences.length > 0) {
+        const selectedExperiences = this.experiences.filter(exp => exp.selected)
+
+        if (selectedExperiences.length === 0) {
+          alert('No professional experiences selected for the resume.')
+          return
+        }
+
         yPosition = addHeader('PROFESSIONAL EXPERIENCE', yPosition)
-        this.experiences.forEach(exp => {
+
+        selectedExperiences.forEach(exp => {
           doc.setFont('helvetica', 'bold')
           doc.setFontSize(11)
           doc.text(
@@ -1033,6 +1192,7 @@ export default {
           const responsibilities = exp.responsibilities
             .split('. ')
             .filter(Boolean)
+
           responsibilities.forEach(resp => {
             if (resp.trim()) {
               yPosition = addBulletPoint(resp.trim(), yPosition)
@@ -1044,8 +1204,16 @@ export default {
 
       // Skills Section
       if (this.skills.length > 0) {
+        const selectedSkills = this.skills.filter(skill => skill.selected)
+
+        if (selectedSkills.length === 0) {
+          alert('No skills selected for the resume.')
+          return
+        }
+
         yPosition = addHeader('SKILLS', yPosition)
-        const skillsList = this.skills.map(skill => skill.name).join(' • ')
+
+        const skillsList = selectedSkills.map(skill => skill.name).join(' • ')
         const skillsLines = doc.splitTextToSize(
           skillsList,
           pageWidth - 2 * leftMargin,
@@ -1058,55 +1226,118 @@ export default {
 
       // Projects Section
       if (this.projects.length > 0) {
-        yPosition = addHeader('PROJECTS', yPosition)
-        this.projects.forEach(project => {
-          doc.setFont('helvetica', 'bold')
-          doc.setFontSize(11)
-          doc.text(project.project_name, leftMargin, yPosition)
-          yPosition += 6
+        const selectedProjects = this.projects.filter(
+          project => project.selected,
+        )
 
-          if (project.role) {
-            doc.setFont('helvetica', 'italic')
-            doc.setFontSize(10)
-            doc.text(`Role: ${project.role}`, leftMargin, yPosition)
+        if (selectedProjects.length > 0) {
+          yPosition = addHeader('PROJECTS', yPosition)
+
+          selectedProjects.forEach(project => {
+            doc.setFont('helvetica', 'bold')
+            doc.setFontSize(11)
+            doc.text(project.project_name, leftMargin, yPosition)
             yPosition += 6
-          }
 
-          if (project.description) {
-            const descLines = doc.splitTextToSize(
-              project.description,
-              pageWidth - 2 * leftMargin,
-            )
-            doc.setFont('helvetica', 'normal')
-            doc.text(descLines, leftMargin, yPosition)
-            yPosition += descLines.length * 6 + 6
-          }
-        })
+            if (project.role) {
+              doc.setFont('helvetica', 'italic')
+              doc.setFontSize(10)
+              doc.text(`Role: ${project.role}`, leftMargin, yPosition)
+              yPosition += 6
+            }
+
+            if (project.description) {
+              const descLines = doc.splitTextToSize(
+                project.description,
+                pageWidth - 2 * leftMargin,
+              )
+              doc.setFont('helvetica', 'normal')
+              doc.text(descLines, leftMargin, yPosition)
+              yPosition += descLines.length * 6 + 6
+            }
+          })
+        }
       }
 
       // Awards Section
       if (this.awards.length > 0) {
-        yPosition = addHeader('AWARDS & ACHIEVEMENTS', yPosition)
-        this.awards.forEach(award => {
-          doc.setFont('helvetica', 'bold')
-          doc.setFontSize(10)
-          doc.text(
-            `${award.title} (${award.year_Awarded})`,
-            leftMargin,
-            yPosition,
-          )
-          yPosition += 6
+        const selectedAwards = this.awards.filter(award => award.selected)
 
-          if (award.description) {
-            doc.setFont('helvetica', 'normal')
-            const descLines = doc.splitTextToSize(
-              award.description,
-              pageWidth - 2 * leftMargin,
+        if (selectedAwards.length > 0) {
+          yPosition = addHeader('AWARDS & ACHIEVEMENTS', yPosition)
+
+          selectedAwards.forEach(award => {
+            doc.setFont('helvetica', 'bold')
+            doc.setFontSize(10)
+            doc.text(
+              `${award.title} (${award.year_Awarded})`,
+              leftMargin,
+              yPosition,
             )
-            doc.text(descLines, leftMargin, yPosition)
-            yPosition += descLines.length * 6 + 6
-          }
-        })
+            yPosition += 6
+
+            if (award.description) {
+              const descLines = doc.splitTextToSize(
+                award.description,
+                pageWidth - 2 * leftMargin,
+              )
+              doc.setFont('helvetica', 'normal')
+              doc.text(descLines, leftMargin, yPosition)
+              yPosition += descLines.length * 6 + 6
+            }
+          })
+        }
+      }
+
+      // Links Section
+      if (this.links.length > 0) {
+        const selectedLinks = this.links.filter(link => link.selected)
+
+        if (selectedLinks.length > 0) {
+          yPosition = addHeader('LINKS', yPosition)
+
+          selectedLinks.forEach(link => {
+            doc.setFont('helvetica', 'bold')
+            doc.setFontSize(10)
+            doc.text(`${link.type}:`, leftMargin, yPosition)
+
+            // Add the link on the same line
+            doc.setFont('helvetica', 'normal')
+            const linkWidth = doc.getTextWidth(`${link.type}: `)
+            doc.text(link.link, leftMargin + linkWidth + 5, yPosition)
+
+            yPosition += 6
+          })
+          yPosition += 10 // Add extra spacing after Links
+        }
+      }
+
+      // Interests Section
+      if (this.interests.length > 0) {
+        const selectedInterests = this.interests.filter(
+          interest => interest.selected,
+        )
+
+        if (selectedInterests.length > 0) {
+          yPosition = addHeader('INTERESTS', yPosition)
+
+          selectedInterests.forEach(interest => {
+            doc.setFont('helvetica', 'bold')
+            doc.setFontSize(10)
+            doc.text(interest.careerPosition, leftMargin, yPosition)
+            yPosition += 6
+
+            if (interest.description) {
+              const descLines = doc.splitTextToSize(
+                interest.description,
+                pageWidth - 2 * leftMargin,
+              )
+              doc.setFont('helvetica', 'normal')
+              doc.text(descLines, leftMargin, yPosition)
+              yPosition += descLines.length * 6 + 6
+            }
+          })
+        }
       }
 
       return doc

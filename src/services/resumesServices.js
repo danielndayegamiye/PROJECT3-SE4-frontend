@@ -16,6 +16,12 @@ const ResumesServices = {
   getUser(id) {
     return apiClient.get(`/user/${id}`)
   },
+  getComment(id) {
+    return apiClient.get(`/resumes/${id}/comment`)
+  },
+  updateComment(id, comment) {
+    return apiClient.put(`/resumes/${id}/comment`, { comment })
+  },
 }
 
 export default ResumesServices

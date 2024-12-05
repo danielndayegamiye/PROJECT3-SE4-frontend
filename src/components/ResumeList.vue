@@ -34,6 +34,7 @@
 
 <script>
 import apiClient from '../services/services.js'
+import Utils from '@/config/utils'
 
 export default {
   name: 'ResumeList',
@@ -59,8 +60,9 @@ export default {
   },
   methods: {
     fetchResumes() {
+      const userId = Utils.getStore('user').userId
       apiClient
-        .get('/resumes')
+        .get('/resumes/user/' + userId)
         .then(response => {
           this.resumes = response.data
         })

@@ -12,7 +12,7 @@
       >
         <v-card
           class="resume-card"
-          @click="viewResume(resume.id)"
+          @click="openPreviewModal(resume)"
           outlined
           elevation="5"
         >
@@ -26,28 +26,40 @@
       </v-col>
     </v-row>
 
-    <!-- Pagination Controls -->
     <v-pagination v-model="currentPage" :length="totalPages"></v-pagination>
   </v-container>
+
+  <!-- Pass the PDF path and showModal to the modal -->
+  <ResumePreview
+    v-if="showPreviewModal"
+    :pdfPath="pdfPath"
+    :commentsProp="currentComment"
+    :showModal="showPreviewModal"
+    @close-modal="showPreviewModal = false"
+    @save-comments="updateComment"
+  />
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import ResumeServices from '@/services/resumesServices'
 import NavBar from '@/components/nav.vue'
+import ResumePreview from '@/components/ResumePreview.vue'
 
 const resumes = ref([])
-const userNames = ref({}) // To store user names keyed by userId
+const userNames = ref({})
 const currentPage = ref(1)
 const resumesPerPage = 12
+const pdfPath = ref('') // Initial value is empty, will be set when a resume is selected
+const showPreviewModal = ref(false)
+const currentComment = ref('')
+const selectedResumeId = ref(null)
 
-// Fetch resumes on component mount
 onMounted(async () => {
   try {
     const response = await ResumeServices.getAllResumes()
-    resumes.value = response.data // Ensure the backend returns an array of resumes
+    resumes.value = response.data
 
-    // Fetch user information for each resume asynchronously
     for (const resume of resumes.value) {
       if (!userNames.value[resume.userId]) {
         fetchUserName(resume.userId)
@@ -58,31 +70,57 @@ onMounted(async () => {
   }
 })
 
-// Function to fetch and cache user name
 async function fetchUserName(userId) {
   try {
-    const response = await ResumeServices.getUser(userId) // Call the service function
-    userNames.value[userId] = response.data.fName + ' ' + response.data.lName // Assuming the user object has a "name" field
+    const response = await ResumeServices.getUser(userId)
+    userNames.value[userId] = response.data.fName + ' ' + response.data.lName
   } catch (error) {
     console.error(`Error fetching user with ID ${userId}:`, error)
-    userNames.value[userId] = 'Unknown User' // Handle errors gracefully
+    userNames.value[userId] = 'Unknown User'
   }
 }
 
-// Computed property for paginated resumes
 const paginatedResumes = computed(() => {
   const start = (currentPage.value - 1) * resumesPerPage
   const end = start + resumesPerPage
   return resumes.value.slice(start, end)
 })
 
-// Total pages based on resume count
 const totalPages = computed(() => {
   return Math.ceil(resumes.value.length / resumesPerPage)
 })
 
-function viewResume(id) {
-  // Navigate to the ResumeDetail route
+async function openPreviewModal(resume) {
+  // When a resume is clicked, fetch the PDF base64 data from the backend
+  ResumeServices.getResume(resume.id)
+    .then(response => {
+      pdfPath.value = response.data.pdfData
+    })
+    .catch(error => {
+      console.error('Error fetching resume:', error)
+    })
+
+  try {
+    const response = await ResumeServices.getComment(resume.id)
+    currentComment.value = response.data.comment || ''
+  } catch (error) {
+    console.error(`Error fetching comments for resume ID ${resume.id}:`, error)
+    currentComment.value = ''
+  }
+
+  selectedResumeId.value = resume.id
+  showPreviewModal.value = true
+}
+
+async function updateComment(updatedComment) {
+  try {
+    await ResumeServices.updateComment(selectedResumeId.value, updatedComment)
+    console.log('Comments updated successfully!')
+  } catch (error) {
+    console.error('Error updating comments:', error)
+  }
+
+  showPreviewModal.value = false
 }
 </script>
 

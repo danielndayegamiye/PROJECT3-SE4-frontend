@@ -4,10 +4,37 @@
       <v-card-title class="modal-title">Projects</v-card-title>
       <v-card-text>
         <v-form>
-          <v-text-field v-model="project_name" label="Project Name" class="text-field"></v-text-field>
-          <v-text-field v-model="description" label="Description" class="text-field"></v-text-field>
-          <v-text-field v-model="role" label="Your Role" class="text-field"></v-text-field>
-          <v-text-field v-model="results" label="Results" class="text-field"></v-text-field>
+          <v-text-field
+            v-model="project_name"
+            label="Project Name"
+            class="text-field"
+            :error-messages="projectNameError ? ['Project Name is required'] : []"
+            @blur="validateProjectName"
+          ></v-text-field>
+
+          <v-text-field
+            v-model="description"
+            label="Description"
+            class="text-field"
+            :error-messages="descriptionError ? ['Description is required'] : []"
+            @blur="validateDescription"
+          ></v-text-field>
+
+          <v-text-field
+            v-model="role"
+            label="Your Role"
+            class="text-field"
+            :error-messages="roleError ? ['Role is required'] : []"
+            @blur="validateRole"
+          ></v-text-field>
+
+          <v-text-field
+            v-model="results"
+            label="Results"
+            class="text-field"
+            :error-messages="resultsError ? ['Results are required'] : []"
+            @blur="validateResults"
+          ></v-text-field>
         </v-form>
       </v-card-text>
       <v-card-actions class="actions">
@@ -39,17 +66,20 @@ export default {
       project_name: '',
       description: '',
       role: '',
-      results: ''
+      results: '',
+      projectNameError: false,
+      descriptionError: false,
+      roleError: false,
+      resultsError: false,
     }
   },
   watch: {
     project: {
       immediate: true,
       handler(newVal) {
-        console.log("Received project:",newVal)
+        console.log("Received project:", newVal);
         if (newVal) {
           // Populate fields for editing
-          
           this.id = newVal.id || null;
           this.project_name = newVal.project_name || '';
           this.description = newVal.description || '';
@@ -65,54 +95,74 @@ export default {
   methods: {
     closeModal() {
       this.$emit('close-modal');
+      this.resetFields();
     },
-    resetFields(){
-      this.id = null,
-      this.project_name = ''
-      this.description = ''
-      this.role = ''
-      this.results = ''
+    resetFields() {
+      this.id = null;
+      this.project_name = '';
+      this.description = '';
+      this.role = '';
+      this.results = '';
+      this.projectNameError = false;
+      this.descriptionError = false;
+      this.roleError = false;
+      this.resultsError = false;
+    },
+    validateProjectName() {
+      this.projectNameError = this.project_name.trim() === '';
+    },
+    validateDescription() {
+      this.descriptionError = this.description.trim() === '';
+    },
+    validateRole() {
+      this.roleError = this.role.trim() === '';
+    },
+    validateResults() {
+      this.resultsError = this.results.trim() === '';
     },
     async saveProjects() {
-      if (this.project_name.trim() && this.description.trim() && this.role.trim() && this.results.trim()) {
-        try {
-          const userId = Utils.getStore('user').userId;
-          if(this.id){
-            const projectsData = {
-              id: this.id,
-              project_name: this.project_name,
-              description: this.description,
-              role: this.role,
-              results: this.results,
-              userId
-            };
+      this.validateProjectName();
+      this.validateDescription();
+      this.validateRole();
+      this.validateResults();
 
-            await ProjectsServices.updateProject(projectsData);
-            this.$emit('projects-updated'); // Emit an event to notify the parent component
-          } else {
-            const projectsData = {
-              project_name: this.project_name,
-              description: this.description,
-              role: this.role,
-              results: this.results,
-              userId
-            };
+      if (
+        this.project_name.trim() === '' ||
+        this.description.trim() === '' ||
+        this.role.trim() === '' ||
+        this.results.trim() === ''
+      ) {
+        console.error('Please fill in all required fields');
+        return;
+      }
 
-            await ProjectsServices.createProjects(projectsData);
-            this.$emit('projects-added'); // Emit an event to notify the parent component
-          }
-          this.closeModal(); // Close the modal on success
+      try {
+        const userId = Utils.getStore('user').userId;
+        const projectsData = {
+          project_name: this.project_name,
+          description: this.description,
+          role: this.role,
+          results: this.results,
+          userId,
+        };
 
-        } catch (error) {
-          console.error('Failed to add projects:', error);
+        if (this.id) {
+          // Update existing project
+          projectsData.id = this.id;
+          await ProjectsServices.updateProject(projectsData);
+          this.$emit('projects-updated'); // Emit an event to notify the parent component
+        } else {
+          // Create new project
+          await ProjectsServices.createProjects(projectsData);
+          this.$emit('projects-added'); // Emit an event to notify the parent component
         }
+        this.closeModal(); // Close the modal on success
+      } catch (error) {
+        console.error('Failed to add projects:', error);
       }
     },
   }
-
 }
-
-
 </script>
 
 <style scoped>

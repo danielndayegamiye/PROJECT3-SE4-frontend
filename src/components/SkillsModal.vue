@@ -4,8 +4,13 @@
       <v-card-title class="modal-title">Skills</v-card-title>
       <v-card-text>
         <v-form>
-          <v-text-field v-model="newSkill" label="Skill" class="text-field">
-          </v-text-field>
+          <v-text-field
+            v-model="newSkill"
+            label="Skill"
+            class="text-field"
+            :error-messages="skillError ? ['Skill is required'] : []"
+            @blur="validateSkill"
+          ></v-text-field>
         </v-form>
       </v-card-text>
       <v-card-actions class="actions">
@@ -35,6 +40,7 @@ export default {
     return {
       skillId: null,
       newSkill: '', // Holds the value of the skill entered by the user
+      skillError: false, // To handle error state for skill input
     }
   },
   watch: {
@@ -56,41 +62,44 @@ export default {
     resetFields() {
       this.skillId = null;
       this.newSkill = '';
+      this.skillError = false; // Reset error state
     },
     closeModal() {
       this.$emit('close-modal')
-      this.newSkill = '' // Clear the skill input field
+      this.resetFields(); // Clear the skill input field
+    },
+    validateSkill() {
+      this.skillError = this.newSkill.trim() === '';
     },
     async saveSkill() {
-      if (this.newSkill.trim()) {
-        try {
-          const userId = Utils.getStore('user').userId; // Retrieve userId from Utils
+      this.validateSkill(); // Validate the skill input field
 
-          if (this.skillId) {
-            // Update existing skill
-            const skillData = {
-              id: this.skillId, // Include the ID for the update
-              name: this.newSkill,
-              userId,
-            };
+      if (this.skillError) {
+        console.error('Please provide a skill');
+        return;
+      }
 
-            await SkillServices.updateSkill(skillData); // Call updateSkill with skillData
-            this.$emit('skill-updated'); // Emit an event to notify the parent component
-          } else {
-            // Create new skill
-            const skillData = { name: this.newSkill, userId };
+      try {
+        const userId = Utils.getStore('user').userId; // Retrieve userId from Utils
 
-            await SkillServices.createSkill(skillData); // Call createSkill with skillData
-            this.$emit('skill-added'); // Emit an event to notify the parent component
-          }
+        const skillData = { name: this.newSkill, userId };
 
-          this.closeModal(); // Close the modal on success
-        } catch (error) {
-          console.error('Failed to save skill:', error);
+        if (this.skillId) {
+          // Update existing skill
+          skillData.id = this.skillId;
+          await SkillServices.updateSkill(skillData); // Call updateSkill with skillData
+          this.$emit('skill-updated'); // Emit an event to notify the parent component
+        } else {
+          // Create new skill
+          await SkillServices.createSkill(skillData); // Call createSkill with skillData
+          this.$emit('skill-added'); // Emit an event to notify the parent component
         }
+
+        this.closeModal(); // Close the modal on success
+      } catch (error) {
+        console.error('Failed to save skill:', error);
       }
     },
-
   },
 }
 </script>

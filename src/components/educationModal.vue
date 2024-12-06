@@ -3,29 +3,34 @@
     <v-card class="modal-card" elevation="3">
       <v-card-title class="modal-title">Education</v-card-title>
       <v-card-text>
-        <v-form>
+        <v-form ref="form" v-model="valid">
           <v-text-field 
             v-model="institution"
+            :rules="[rules.required]"
             label="Institution"
             class="text-field">
           </v-text-field>
           <v-text-field
             v-model="degree"
+            :rules="[rules.required]"
             label="Degree or Study"
             class="text-field"
           ></v-text-field>
           <v-text-field
             v-model="graduationDate"
-            label="Graduation date"
+            :rules="[rules.required]"
+            label="Graduation Date"
             class="text-field"
           ></v-text-field>
           <v-text-field
             v-model="gpa"
+            :rules="[rules.required]"
             label="GPA"
             class="text-field"
           ></v-text-field>
           <v-text-field
             v-model="relevantWork"
+            :rules="[rules.required]"
             label="Relevant Work"
             class="text-field"
           ></v-text-field>
@@ -42,8 +47,8 @@
 </template>
 
 <script>
-import EducationServices from '../services/educationServices'
-import Utils from '../config/utils.js'
+import EducationServices from '../services/educationServices';
+import Utils from '../config/utils.js';
 
 export default {
   name: 'EducationModal',
@@ -52,7 +57,7 @@ export default {
     education: {
       type: Object,
       default: null,
-    }
+    },
   },
   data() {
     return {
@@ -61,17 +66,18 @@ export default {
       degree: '',
       graduationDate: '',
       gpa: '',
-      relevantWork: ''
-    }
+      relevantWork: '',
+      valid: false,
+      rules: {
+        required: (value) => !!value || 'This field is required',
+      },
+    };
   },
   watch: {
     education: {
       immediate: true,
       handler(newVal) {
-        console.log("Received education prop:", newVal)
         if (newVal) {
-          // Populate fields for editing
-          
           this.id = newVal.id || null;
           this.institution = newVal.institution || '';
           this.degree = newVal.degree || '';
@@ -79,7 +85,6 @@ export default {
           this.gpa = newVal.gpa || '';
           this.relevantWork = newVal.relevantWork || '';
         } else {
-          // Reset fields for adding
           this.resetFields();
         }
       },
@@ -87,66 +92,54 @@ export default {
   },
   methods: {
     resetFields() {
-      this.id = null,
-      this.institution = ''
-      this.degree = ''
-      this.graduationDate = ''
-      this.gpa = ''
-      this.relevantWork = ''
+      this.id = null;
+      this.institution = '';
+      this.degree = '';
+      this.graduationDate = '';
+      this.gpa = '';
+      this.relevantWork = '';
     },
     closeModal() {
+      const form = this.$refs.form;
+      if (form) form.resetValidation();
+      this.resetFields();
       this.$emit('close-modal');
     },
     async saveEducation() {
-      if (
-        this.institution.trim() &&
-        this.degree.trim() &&
-        this.graduationDate.trim() &&
-        this.gpa.trim() &&
-        this.relevantWork.trim()
-      ) {
+      const form = this.$refs.form;
+
+      if (form.validate()) {
         try {
-          console.log("Current ID: ", this.id)
           const userId = Utils.getStore('user').userId;
 
-          if (this.id) {
-            // Update existing education
-            const educationData = {
-              id: this.id, // Include the ID for the update
-              institution: this.institution,
-              degree: this.degree,
-              graduationDate: this.graduationDate,
-              gpa: this.gpa,
-              relevantWork: this.relevantWork,
-              userId,
-            };
-            console.log("updating education")
-            await EducationServices.updateEducation(educationData); // Call updateEducation with educationData
-            this.$emit('education-updated'); // Emit an event to notify the parent component
-          } else {
-            // Create new education
-            const educationData = {
-              institution: this.institution,
-              degree: this.degree,
-              graduationDate: this.graduationDate,
-              gpa: this.gpa,
-              relevantWork: this.relevantWork,
-              userId,
-            };
+          const educationData = {
+            id: this.id,
+            institution: this.institution,
+            degree: this.degree,
+            graduationDate: this.graduationDate,
+            gpa: this.gpa,
+            relevantWork: this.relevantWork,
+            userId,
+          };
 
-            await EducationServices.createEducation(educationData); // Call createEducation with educationData
-            this.$emit('education-added'); // Emit an event to notify the parent component
+          if (this.id) {
+            await EducationServices.updateEducation(educationData);
+            this.$emit('education-updated');
+          } else {
+            await EducationServices.createEducation(educationData);
+            this.$emit('education-added');
           }
 
-          this.closeModal(); // Close the modal on success
+          this.closeModal();
         } catch (error) {
           console.error('Failed to save education:', error);
         }
+      } else {
+        console.log('Form is invalid!');
       }
     },
-
-  }
-}
+  },
+};
 </script>
 
 <style scoped>
@@ -199,4 +192,3 @@ export default {
   color: #2c2c2c;
 }
 </style>
-

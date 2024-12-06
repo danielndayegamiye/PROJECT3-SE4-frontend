@@ -9,30 +9,42 @@
             label="First Name"
             outlined
             class="text-field"
+            :error-messages="firstNameError ? ['First Name is required'] : []"
+            @blur="validateFirstName"
           ></v-text-field>
+
           <v-text-field
             v-model="last_name"
             label="Last Name"
             outlined
             class="text-field"
+            :error-messages="lastNameError ? ['Last Name is required'] : []"
+            @blur="validateLastName"
           ></v-text-field>
+
           <v-text-field
             v-model="email"
             label="Email"
             outlined
             type="email"
             class="text-field"
+            :error-messages="emailError ? ['Email is required'] : []"
+            @blur="validateEmail"
           ></v-text-field>
+
           <v-text-field
             v-model="phone_number"
             label="Phone Number"
             outlined
             type="tel"
             class="text-field"
+            :error-messages="phoneNumberError ? ['Phone Number is required'] : []"
+            @blur="validatePhoneNumber"
           ></v-text-field>
+
           <v-text-field
             v-model="address"
-            label="Address(Optional)"
+            label="Address (Optional)"
             outlined
             class="text-field"
           ></v-text-field>
@@ -69,6 +81,10 @@ export default {
       email: '',
       phone_number: '',
       address: '',
+      firstNameError: false,
+      lastNameError: false,
+      emailError: false,
+      phoneNumberError: false,
     }
   },
   watch: {
@@ -92,60 +108,81 @@ export default {
   },
   methods: {
     closeModal() {
-      this.$emit('close-modal')
-      this.resetFields()
+      this.$emit('close-modal');
+      this.resetFields();
     },
     resetFields() {
-      this.first_name = ''
-      this.last_name = ''
-      this.email = ''
-      this.phone_number = ''
-      this.address = ''
+      this.first_name = '';
+      this.last_name = '';
+      this.email = '';
+      this.phone_number = '';
+      this.address = '';
+      this.firstNameError = false;
+      this.lastNameError = false;
+      this.emailError = false;
+      this.phoneNumberError = false;
+    },
+    validateFirstName() {
+      this.firstNameError = this.first_name.trim() === '';
+    },
+    validateLastName() {
+      this.lastNameError = this.last_name.trim() === '';
+    },
+    validateEmail() {
+      this.emailError = this.email.trim() === '';
+    },
+    validatePhoneNumber() {
+      this.phoneNumberError = this.phone_number.trim() === '';
     },
     async savePersonalInfo() {
+      this.validateFirstName();
+      this.validateLastName();
+      this.validateEmail();
+      this.validatePhoneNumber();
+
       if (
-        this.first_name.trim() &&
-        this.last_name.trim() &&
-        this.phone_number.trim() &&
-        this.email.trim(),
-        this.address.trim()
-      ){
-        try {
-          if (this.id) {
-            // Update existing personal info
-            const personalInfoData = {
-              id: this.id,
-              first_name: this.first_name,
-              last_name: this.last_name,
-              phone_number: this.phone_number,
-              address: this.address,
-              email: this.email,
-            };
-            await PersonalInfoServices.updatePersonalInfo(personalInfoData);
-            this.$emit('personalInfo-updated'); // Notify parent about the update
-          } else {
-            // Create new personal info
-            const userId = Utils.getStore('user').userId;
-            const personalInfoData = {
-              first_name: this.first_name,
-              last_name: this.last_name,
-              phone_number: this.phone_number,
-              address: this.address,
-              email: this.email,
-              userId,
-            };
-            await PersonalInfoServices.createPersonalInfo(personalInfoData);
-            this.$emit('personalInfo-added'); // Notify parent about the addition
-          }
+        this.first_name.trim() === '' ||
+        this.last_name.trim() === '' ||
+        this.email.trim() === '' ||
+        this.phone_number.trim() === ''
+      ) {
+        console.error('Please fill in all required fields');
+        return;
+      }
 
-            this.closeModal(); // Close the modal on success
-          } catch (error) {
-            console.error('Failed to save personal info:', error);
-          }
-  }
-},
+      try {
+        if (this.id) {
+          // Update existing personal info
+          const personalInfoData = {
+            id: this.id,
+            first_name: this.first_name,
+            last_name: this.last_name,
+            phone_number: this.phone_number,
+            address: this.address,
+            email: this.email,
+          };
+          await PersonalInfoServices.updatePersonalInfo(personalInfoData);
+          this.$emit('personalInfo-updated'); // Notify parent about the update
+        } else {
+          // Create new personal info
+          const userId = Utils.getStore('user').userId;
+          const personalInfoData = {
+            first_name: this.first_name,
+            last_name: this.last_name,
+            phone_number: this.phone_number,
+            address: this.address,
+            email: this.email,
+            userId,
+          };
+          await PersonalInfoServices.createPersonalInfo(personalInfoData);
+          this.$emit('personalInfo-added'); // Notify parent about the addition
+        }
 
-
+        this.closeModal(); // Close the modal on success
+      } catch (error) {
+        console.error('Failed to save personal info:', error);
+      }
+    },
   },
 }
 </script>

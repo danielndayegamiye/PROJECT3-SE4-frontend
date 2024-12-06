@@ -3,17 +3,25 @@
     <v-card class="modal-card" elevation="3">
       <v-card-title class="modal-title">Interests</v-card-title>
       <v-card-text>
-        <v-form>
+        <v-form ref="form" v-model="isValid">
+          <!-- Career Position Input -->
           <v-text-field
             v-model="careerPosition"
             label="Name"
             class="text-field"
-          >
-          </v-text-field>
+            :rules="[rules.required, rules.maxLength(100)]"
+            outlined
+            required
+          ></v-text-field>
+          
+          <!-- Description Input -->
           <v-text-field
             v-model="description"
             label="Description"
             class="text-field"
+            :rules="[rules.required, rules.maxLength(255)]"
+            outlined
+            required
           ></v-text-field>
         </v-form>
       </v-card-text>
@@ -28,8 +36,8 @@
 </template>
 
 <script>
-import InterestServices from '../services/interestServices'
-import Utils from '../config/utils.js'
+import InterestServices from '../services/interestServices';
+import Utils from '../config/utils.js';
 
 export default {
   name: 'InterestsModal',
@@ -38,74 +46,75 @@ export default {
     interest: {
       type: Object,
       default: null,
-    }
+    },
   },
   data() {
     return {
       id: null,
       careerPosition: '',
       description: '',
-    }
+      isValid: false,
+      rules: {
+        required: (value) => !!value || 'This field is required.',
+        maxLength: (max) => (value) =>
+          value.length <= max || `Must be ${max} characters or less.`,
+      },
+    };
   },
   watch: {
     interest: {
       immediate: true,
       handler(newVal) {
-        console.log("Received interest prop:", newVal)
+        console.log('Received interest prop:', newVal);
         if (newVal) {
-          // Populate fields for editing
-          
           this.id = newVal.id || null;
           this.careerPosition = newVal.careerPosition || '';
           this.description = newVal.description || '';
         } else {
-          // Reset fields for adding
           this.resetFields();
         }
       },
     },
   },
   methods: {
-    resetFields(){
-      this.id = null,
-      this.careerPosition = '',
-      this.description = ''
+    resetFields() {
+      this.id = null;
+      this.careerPosition = '';
+      this.description = '';
     },
     closeModal() {
-      this.$emit('close-modal')
+      this.$emit('close-modal');
+      this.resetFields();
     },
     async saveInterest() {
-      if (this.careerPosition.trim() && this.description.trim()) {
+      const isFormValid = await this.$refs.form.validate();
+
+      if (isFormValid) {
         try {
           const userId = Utils.getStore('user').userId;
           const interestData = {
-            id: this.id, // Include `id` for updates
+            id: this.id,
             careerPosition: this.careerPosition,
             description: this.description,
             userId,
           };
 
           if (this.id) {
-            // Update existing interest
-            console.log('Updating interest:', interestData);
-            await InterestServices.updateInterests(interestData); // Call the update service
-            this.$emit('interest-updated'); // Notify parent component
+            await InterestServices.updateInterests(interestData);
+            this.$emit('interest-updated');
           } else {
-            // Create new interest
-            console.log('Creating new interest:', interestData);
-            await InterestServices.createInterest(interestData); // Call the create service
-            this.$emit('interest-added'); // Notify parent component
+            await InterestServices.createInterest(interestData);
+            this.$emit('interest-added');
           }
 
-          this.closeModal(); // Close the modal on success
+          this.closeModal();
         } catch (error) {
           console.error('Failed to save interest:', error);
         }
       }
     },
-
   },
-}
+};
 </script>
 
 <style scoped>

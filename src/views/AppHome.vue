@@ -49,7 +49,7 @@
               v-for="resume in recentResumes"
               :key="resume.id"
               class="resume-card"
-              @click="openResume(resume.id)"
+              @click="openResume(resume)"
             >
               <span class="resume-icon">📑</span>
               <div class="resume-details">
@@ -60,6 +60,14 @@
               </div>
             </div>
           </div>
+          <ResumePreview
+            v-if="showPreviewModal"
+            :pdfPath="pdfPath"
+            :commentsProp="currentComment"
+            :showModal="showPreviewModal"
+            @close-modal="showPreviewModal = false"
+            @save-comments="updateComment"
+          />
         </section>
       </div>
 
@@ -83,17 +91,25 @@ import NavBar from '../components/nav.vue'
 import ResumeList from '../components/ResumeList.vue'
 import apiClient from '../services/services.js'
 import Utils from '@/config/utils'
+import ResumePreview from '@/components/ResumePreview.vue'
+import ResumesServices from '@/services/resumesServices'
 
 export default {
   name: 'AppHome',
   components: {
     NavBar,
     ResumeList,
+    ResumePreview,
   },
   data() {
     return {
       resumes: [],
       showResumeList: false, // Controls display of ResumeList modal
+      showPreviewModal: false, // Controls display of ResumePreview modal
+      pdfPath: '',
+      currentComment: '',
+      selectedResume: '',
+      selectedResumeId: '',
     }
   },
   computed: {
@@ -131,8 +147,31 @@ export default {
     closeModal() {
       this.showResumeList = false // Close the modal
     },
-    openResume(id) {
-      this.$router.push({ name: 'resumeEditor', params: { id } })
+    async openResume(resume) {
+      ResumesServices.getResume(resume.id)
+        .then(response => {
+          this.pdfPath = response.data.pdfData
+        })
+        .catch(error => {
+          console.error('Error fetching resume:', error)
+        })
+      // Use the resume's pdfData directly for the modal
+
+      // Fetch comments only if necessary
+      try {
+        const response = await ResumesServices.getComment(resume.id)
+        this.currentComment = response.data.comment || ''
+      } catch (error) {
+        console.error(
+          `Error fetching comments for resume ID ${resume.id}:`,
+          error,
+        )
+        this.currentComment = ''
+      }
+      console.log(this.pdfPath)
+      // Update the selected resume ID and show the modal
+      this.selectedResumeId = resume.id
+      this.showPreviewModal = true
     },
     formatDate(dateString) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' }

@@ -162,12 +162,28 @@ export default {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.generate-resume {
-  display: flex;
-  justify-content: center;
-  margin-top: 3rem;
+.generate-resume button {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: #811429; /* Burgundy color */
+  color: white;
+  border: 2px solid #811429; /* Border matching the button color */
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
 }
 
+.generate-resume button:hover {
+  background-color: white;
+  color: #811429; /* Burgundy color on hover */
+  border-color: #811429; /* Burgundy border on hover */
+}
+
+.generate-resume button:focus {
+  border-color: #4d0f1c; /* Darker burgundy when focused */
+}
 textarea {
   width: 100%;
   height: 100px;
@@ -180,9 +196,22 @@ button {
 }
 
 .response {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 5px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  color: #333;
+  line-height: 1.5;
+}
+
+.response p {
+  font-size: 1rem;
+  color: #555;
+  margin: 0;
 }
 </style>
